@@ -20,7 +20,7 @@ int SetupSDL(int x, int y) {
 	if (!gameWindow)
 		return 1;
 
-	screenBuffer = SDL_CreateRGBSurface(SDL_SWSURFACE, bufferSizeX, bufferSizeY, 16, 0, 0, 0, 0);
+	screenBuffer = SDL_CreateRGBSurface(SDL_SWSURFACE, x, y, 16, 0, 0, 0, 0);
 	if (!screenBuffer)
 		return 1;
 #endif

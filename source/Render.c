@@ -40,16 +40,25 @@ void ReleaseFrameBuffer() {
 
 // --- SDL boilerplate code ---
 void UpdateScreenSDL() {
-	//if (bufferSizeX == gameWindow.width && bufferSizeY == gameWindow.height) {
+	if (bufferSizeX == gameWindow->w && bufferSizeY == gameWindow->h) {
 		memcpy(screenBuffer->pixels, frameBuffer, bufferSizeX * bufferSizeY * sizeof(u16));
-	//} else {
-	//	// SDL 1.2 doesn't have any built-ins for surface scaling, so we have to do it manually
-	//	for (int y = 0; y < gameWindow.height; y++) {
-	//		for (int x = 0; x < gameWindow.width; x++) {
-	//			// TODO: scale
-	//		}
-	//	}
-	//}
+	} else {
+		// SDL 1.2 doesn't have any built-ins for surface scaling, so we have to do it manually
+		float xratio = gameWindow->w  / bufferSizeX;
+		float yratio = gameWindow->h  / bufferSizeY;
+
+		u16* ptr = screenBuffer->pixels;
+
+		for (int y = 0; y < gameWindow->h; y++) {
+			for (int x = 0; x < gameWindow->w; x++) {
+				int dx = (int) (x / xratio);
+				int dy = (int) (y / yratio);
+
+				*ptr = frameBuffer[dy * bufferSizeX + dx];
+				ptr++;
+			}
+		}
+	}
 	SDL_BlitSurface(screenBuffer, NULL, gameWindow, NULL);
 	
 	SDL_Flip(gameWindow);
