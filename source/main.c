@@ -1,6 +1,11 @@
 #include "SuperX.h"
 
 int main() {
-	printf("Compiled succesfully :)\n");
+	if (InitSuperX())
+		return 1;
+
+	RunSuperX();
+	CloseSuperX();
+
 	return 0;
 }
