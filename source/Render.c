@@ -25,11 +25,29 @@ int CreateFrameBuffer(int x, int y) {
 	return 0;
 }
 
+void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int height) {
+	if (spriteSheetTable[sheetID].hasPalette) {
+		// TODO: implement paletted graphics first
+	} else {
+		u16* srcPtr = (u16*) (spriteSheetTable[sheetID].pixelData) + spriteSheetTable[sheetID].width * sy + sx;
+		u16* dstPtr = (u16*) (frameBuffer) + bufferSizeX * y + x;
+
+		for (int dy = 0; dy < height; dy++) {
+			for (int dx = 0; dx < width; dx++) {
+				*dstPtr = *srcPtr;
+				srcPtr++;
+				dstPtr++;
+			}
+
+			srcPtr += spriteSheetTable[sheetID].width - width;
+			dstPtr += bufferSizeX - width;
+		}
+	}
+}
+
 void ClearFrameBuffer(u16 color) {
-	u16* fb = frameBuffer;
 	for (int i = 0; i < bufferSizeX * bufferSizeY; i++) {
-		*fb = (u16) color;
-		fb++;
+		frameBuffer[i] = (u16) color;
 	}
 }
 
@@ -47,7 +65,7 @@ void UpdateScreenSDL() {
 		float xratio = gameWindow->w  / bufferSizeX;
 		float yratio = gameWindow->h  / bufferSizeY;
 
-		u16* ptr = screenBuffer->pixels;
+		u16* ptr = (u16*) screenBuffer->pixels;
 
 		for (int y = 0; y < gameWindow->h; y++) {
 			for (int x = 0; x < gameWindow->w; x++) {

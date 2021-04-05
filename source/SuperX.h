@@ -20,6 +20,7 @@
 // --- include statements ---
 #include <stdio.h>
 #include <stdlib.h>
+#include <lodepng.h>
 
 #if USING_SDL1
 #include <SDL/SDL.h>
@@ -27,6 +28,7 @@
 
 #include "Debug.h"
 #include "Render.h"
+#include "Sprite.h"
 
 // --- engine variables ---
 typedef enum {

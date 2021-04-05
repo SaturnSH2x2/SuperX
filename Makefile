@@ -2,17 +2,18 @@
 # so this probably sucks but I kinda don't care
 
 CC       := gcc
+CXX      := g++
 CFLAGS   := -g
 LIBS_ALL := -lSDL
 
-SOURCES := $(wildcard source/*.c)
+SOURCES := $(wildcard source/*.c) lodepng/lodepng.cpp
 
 objects/%.o: %
 	mkdir -p $(@D)
-	$(CC) $(CFLAGS) $^ -o $@ -c
+	$(CXX) $(CFLAGS) $^ -o $@ -c
 
 SuperX: $(SOURCES:%=objects/%.o)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS_ALL)
+	$(CXX) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS_ALL)
 clean::
 	rm -rf objects
 	rm -rf ./SuperX

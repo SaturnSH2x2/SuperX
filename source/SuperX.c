@@ -3,6 +3,8 @@
 SuperXState engineState;
 SuperXRenderType renderType;
 
+char isFullscreen;
+
 int frameRate;
 
 // --- SDL-dependent functions ---
@@ -36,6 +38,10 @@ int SetupSDL(int x, int y) {
 #endif
 
 	return 0;
+}
+
+void ToggleFullscreen() {
+
 }
 
 void ProcessEventsSDL() {
@@ -78,6 +84,20 @@ int InitSuperX() {
 	engineState = SUPERX_MAINGAME;
 	renderType  = SUPERX_SW_RENDER;
 	frameRate   = 60;
+
+	isFullscreen = 0;
+
+	/* testing code begins here */
+
+	u8 index;
+	int result = LoadSpriteSheetFromPNG("./sonic.png", &index);
+	if (result) {
+		PrintLog("ERROR: could not load png\n");
+	}
+
+	DrawSpriteSW(0, 50, 50, 1, 1, 28, 38);
+
+	/* end testing code */
 
 	return 0;
 }
