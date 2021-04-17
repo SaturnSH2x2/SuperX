@@ -34,7 +34,9 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 
 		for (int dy = 0; dy < height; dy++) {
 			for (int dx = 0; dx < width; dx++) {
-				*dstPtr = *srcPtr;
+				if (*srcPtr != 0xf81f) 
+					*dstPtr = *srcPtr;
+
 				srcPtr++;
 				dstPtr++;
 			}
