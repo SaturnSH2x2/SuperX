@@ -37,6 +37,8 @@
 	Actually implementing 2D Sonic physics comes later.
 */
 
+#include "String.h"
+#include "File.h"
 #include "Debug.h"
 #include "Render.h"
 #include "Sprite.h"
@@ -56,6 +58,7 @@ typedef enum {
 
 extern SuperXState engineState;
 extern SuperXRenderType renderType;
+extern char basePath[255];
 extern int frameRate;
 
 // --- SDL functions ---

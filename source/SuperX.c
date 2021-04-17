@@ -4,6 +4,7 @@ SuperXState engineState;
 SuperXRenderType renderType;
 
 char isFullscreen;
+char basePath[255];
 
 int frameRate;
 
@@ -65,6 +66,8 @@ void CloseSDL() {
 
 // --- main engine functions ---
 int InitSuperX() {
+	memset(basePath, 0, sizeof(basePath));
+
 	// TODO: fb resolution is currently hard-coded,
 	// implement code to load from config file later
 	if (CreateFrameBuffer(424, 240)) {
@@ -88,6 +91,7 @@ int InitSuperX() {
 	isFullscreen = 0;
 
 	/* testing code begins here */
+	PrintLog("Resolution: %dx%d\n", screenBuffer->w, screenBuffer->h);
 
 	u8 index;
 	int result = LoadSpriteSheetFromPNG("./sonic.png", &index);
