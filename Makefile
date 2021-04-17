@@ -4,8 +4,8 @@
 CC       := gcc
 CXX      := g++
 CFLAGS   := -g -Wall
-INCLUDES := -I/usr/include
-LIBS_ALL := -llua5.4 -lSDL
+INCLUDES := -I/usr/include/lua5.2
+LIBS_ALL := -llua5.2 -lSDL
 
 SOURCES := $(wildcard source/*.c) lodepng/lodepng.cpp
 
@@ -14,7 +14,7 @@ objects/%.o: %
 	$(CXX) $(CFLAGS) $^ -o $@ -c $(INCLUDES) $(LIBS_ALL)
 
 SuperX: $(SOURCES:%=objects/%.o)
-	$(CXX) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LIBS_ALL)
+	$(CXX) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(INCLUDES) $(LIBS_ALL)
 clean::
 	rm -rf objects
 	rm -rf ./SuperX

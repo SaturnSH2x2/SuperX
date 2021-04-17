@@ -92,6 +92,7 @@ int InitSuperX() {
 
 	/* testing code begins here */
 	PrintLog("Resolution: %dx%d\n", screenBuffer->w, screenBuffer->h);
+	InitObject("debug.lua");
 
 	u8 index;
 	int result = LoadSpriteSheetFromPNG("./sonic.png", &index);
@@ -115,6 +116,9 @@ void RunSuperX() {
 	int start, end;
 
 	while (engineState != SUPERX_EXIT) {
+		// script stuff
+		UpdateObjects();
+
 #if SDL1_USE_TIMER
 		start = SDL_GetTicks();
 #endif
