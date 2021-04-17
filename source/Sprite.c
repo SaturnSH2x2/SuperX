@@ -10,6 +10,7 @@ void ClearAllSpriteSheets() {
 }
 
 // loads pixel data from PNG and puts it into spritesheet
+// TODO: PNGs support palettes! add some detection or something
 int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	unsigned int error;
 	unsigned char* pixelData = NULL;
@@ -40,7 +41,7 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	// copy pixel data into memory
 	u32* srcPtr = (u32*) pixelData;
 	u16* dstPtr = (u16*) spriteSheetTable[*sheetIndex].pixelData;
-	for (int i = 0; i < width * height; i++) {
+	for (unsigned int i = 0; i < width * height; i++) {
 		*dstPtr = RGBA8_to_RGB565(*srcPtr);
 		dstPtr++;
 		srcPtr++;

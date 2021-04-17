@@ -11,7 +11,8 @@ void PrintLog(const char* str, ...) {
 	printf("%s\n", buf);
 
 	char fPath[0x100];
-	sprintf(fPath, "%slog.txt", basePath);
+	CopyString(fPath, basePath, 255);
+	AppendString(fPath, "log.txt", 255);	
 
 	FileIO* f = fOpen(fPath, "a");
 	if (f) {

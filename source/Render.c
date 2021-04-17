@@ -17,7 +17,7 @@ int CreateFrameBuffer(int x, int y) {
 		return 1;	
 	}
 
-	memset(frameBuffer, 0, sizeof(frameBuffer));
+	memset(frameBuffer, 0, bufferSizeX * bufferSizeY * sizeof(u16));
 
 	bufferSizeX = x;
 	bufferSizeY = y;

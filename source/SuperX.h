@@ -21,6 +21,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <lodepng.h>
+#include <lua.h>
+#include <lualib.h>
+#include <luaxlib.h>
 
 #if USING_SDL1
 #include <SDL/SDL.h>
