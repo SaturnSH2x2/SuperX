@@ -63,6 +63,8 @@ void UpdateScreenSDL() {
 	if (bufferSizeX == gameWindow->w && bufferSizeY == gameWindow->h) {
 		memcpy(screenBuffer->pixels, frameBuffer, bufferSizeX * bufferSizeY * sizeof(u16));
 	} else {
+		// TODO: this is stupid, since you're only using SDL 1.2 for 3DS audio support
+		// anyways; migrate to SDL 2 soon
 		// SDL 1.2 doesn't have any built-ins for surface scaling, so we have to do it manually
 		float xratio = gameWindow->w  / bufferSizeX;
 		float yratio = gameWindow->h  / bufferSizeY;

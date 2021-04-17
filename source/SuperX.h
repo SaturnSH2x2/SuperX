@@ -26,6 +26,17 @@
 #include <SDL/SDL.h>
 #endif
 
+/*
+	TODO: main priorities right now should be
+		1. Implement Lua scripting support (so you don't have to 
+			hard-code tests into the engine)
+		2. Add tileset support (worry about parallax later)
+		3. Add sprite animation support. Somehow. Maybe implement a way to
+			play GIF animations directly?
+
+	Actually implementing 2D Sonic physics comes later.
+*/
+
 #include "Debug.h"
 #include "Render.h"
 #include "Sprite.h"

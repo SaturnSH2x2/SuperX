@@ -22,6 +22,7 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex);
 
 // --- inline functions ---
 // modified from https://afterthoughtsoftware.com/posts/convert-rgb888-to-rgb565
+// this may be endian-dependent; maybe you should do a platform check?
 inline u16 RGBA8_to_RGB565(u32 color) {
 	u8 a1 = color & 0xFF000000 >> 24;
 	if (a1 == 0)
