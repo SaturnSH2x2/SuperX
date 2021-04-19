@@ -3,7 +3,7 @@
 
 CC       := gcc
 CXX      := g++
-CFLAGS   := -g -Wall
+CFLAGS   := -g -Wall -O2
 INCLUDES := -I/usr/include/lua5.2
 LIBS_ALL := -llua5.2 -lSDL
 
