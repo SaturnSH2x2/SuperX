@@ -100,7 +100,7 @@ int InitSuperX() {
 		PrintLog("ERROR: could not load png\n");
 	}
 
-	DrawSpriteSW(0, 50, 50, 1, 1, 28, 38);
+	DrawSpriteSW(0, 50, 50, 1, 1, 28, 38, XYFLIP);
 
 	/* end testing code */
 

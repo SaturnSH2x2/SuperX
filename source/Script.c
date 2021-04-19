@@ -25,6 +25,41 @@ static int l_loadSSFromPNG(lua_State* L) {
 	return 1;
 }
 
+// render
+static int l_clearFrameBuffer(lua_State* L) {
+	u32 color = (u32) luaL_checkinteger(L, 1);
+	if (renderType == SUPERX_SW_RENDER)
+		ClearFrameBuffer(color);
+	else
+		PrintLog("NOTE: unimplemented draw call (ClearFrameBuffer)\n");
+
+	return 0;
+}
+
+static int l_drawSprite(lua_State* L) {
+	int argcount = lua_gettop(L);
+	if (argcount < 8) {
+		PrintLog("ERROR: too few arguments to DrawSprite\n");
+		return 0;
+	}
+
+	int sid = luaL_checkinteger(L, 1);
+	int x   = luaL_checkinteger(L, 2);
+	int y   = luaL_checkinteger(L, 3);
+	int sx  = luaL_checkinteger(L, 4);
+	int sy  = luaL_checkinteger(L, 5);
+	int w   = luaL_checkinteger(L, 6);
+	int h   = luaL_checkinteger(L, 7);
+	SpriteFlipFlag f = (SpriteFlipFlag) luaL_checkinteger(L, 8);
+
+	if (renderType == SUPERX_SW_RENDER)
+		DrawSpriteSW(sid, x, y, sx, sy, w, h, f);
+	else
+		PrintLog("NOTE: unimplemented draw call (DrawSprite)\n");
+
+	return 0;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -37,6 +72,13 @@ static const struct luaL_reg SuperXSprite [] = {
 	{ "LoadFromPNG"           , l_loadSSFromPNG },
 	{ NULL	                  , NULL            }
 };
+
+static const struct luaL_reg SuperXRender [] = {
+	{ "ClearScreen",	l_clearFrameBuffer },
+	{ "DrawSprite",		l_drawSprite },
+	{ NULL,			NULL }
+};
+
 // --- end Lua library definitions ---
 int InitObject(const char* scriptName) {
 	int i = -1;
@@ -73,6 +115,10 @@ int InitObject(const char* scriptName) {
 	lua_newtable(objs[i]);
 	luaL_setfuncs(objs[i], SuperXSprite, 0);
 	lua_setglobal(objs[i], "Sprite");
+
+	lua_newtable(objs[i]);
+	luaL_setfuncs(objs[i], SuperXRender, 0);
+	lua_setglobal(objs[i], "Render");
 
 	lua_getglobal(objs[i], "init");
 	if (lua_pcall(objs[i], 0, 0, 0)) {

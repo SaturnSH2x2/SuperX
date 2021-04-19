@@ -25,24 +25,77 @@ int CreateFrameBuffer(int x, int y) {
 	return 0;
 }
 
-void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int height) {
+void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int height, SpriteFlipFlag flag) {
 	if (spriteSheetTable[sheetID].hasPalette) {
 		// TODO: implement paletted graphics first
 	} else {
 		u16* srcPtr = (u16*) (spriteSheetTable[sheetID].pixelData) + spriteSheetTable[sheetID].width * sy + sx;
 		u16* dstPtr = (u16*) (frameBuffer) + bufferSizeX * y + x;
 
-		for (int dy = 0; dy < height; dy++) {
-			for (int dx = 0; dx < width; dx++) {
-				if (*srcPtr != 0xf81f) 
-					*dstPtr = *srcPtr;
+		switch (flag) {
+			case XFLIP:
+				srcPtr += width;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != 0xf81f)
+							*dstPtr = *srcPtr;
 
-				srcPtr++;
-				dstPtr++;
-			}
+						srcPtr--;
+						dstPtr++;
+					}
 
-			srcPtr += spriteSheetTable[sheetID].width - width;
-			dstPtr += bufferSizeX - width;
+					srcPtr += spriteSheetTable[sheetID].width + width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			case YFLIP:
+				srcPtr += spriteSheetTable[sheetID].width * height;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != 0xf81f)
+							*dstPtr = *srcPtr;
+
+						srcPtr++;
+						dstPtr++;
+					}
+
+					srcPtr -= spriteSheetTable[sheetID].width + width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			case XYFLIP:
+				srcPtr += spriteSheetTable[sheetID].width * height + width;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != 0xf81f)
+							*dstPtr = *srcPtr;
+
+						srcPtr--;
+						dstPtr++;
+					}
+
+					srcPtr -= spriteSheetTable[sheetID].width - width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			default:
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != 0xf81f) 
+							*dstPtr = *srcPtr;
+
+						srcPtr++;
+						dstPtr++;
+					}
+
+					srcPtr += spriteSheetTable[sheetID].width - width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
 		}
 	}
 }
