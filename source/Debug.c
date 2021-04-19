@@ -10,11 +10,12 @@ void PrintLog(const char* str, ...) {
 	vsprintf(buf, str, args);
 	printf("%s\n", buf);
 
-	char fPath[0x100];
-	CopyString(fPath, basePath, 255);
-	AppendString(fPath, "log.txt", 255);	
+	// TODO: implement this right at some point
+	//char fPath[0x100];
+	//CopyString(fPath, basePath, 255);
+	//AppendString(fPath, "log.txt", 255);	
 
-	FileIO* f = fOpen(fPath, "a");
+	FileIO* f = fOpen("log.txt", "a");
 	if (f) {
 		fWrite(f, &buf, GetStringLength(buf), 1);
 		fClose(f);

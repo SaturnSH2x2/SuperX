@@ -1,7 +1,7 @@
 #include "SuperX.h"
 
 SpriteSheet spriteSheetTable[MAX_SPRITESHEET_COUNT];
-u8 usedSpriteSheets;
+u8 usedSpriteSheets = 0;
 
 void ClearAllSpriteSheets() {
 	for (u8 i = 0; i < usedSpriteSheets; i++) {
@@ -19,7 +19,7 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	// load raw pixel data into memory
 	error = lodepng_decode32_file(&pixelData, &width, &height, fileName);
 	if (error) {
-		PrintLog(lodepng_error_text(error));
+		PrintLog("ERROR: loading %s, %s\n", fileName, lodepng_error_text(error));
 		return 1;
 	}
 
