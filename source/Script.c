@@ -125,6 +125,10 @@ int InitObject(const char* scriptName) {
 	lua_setfield(objs[i], -2, "YFLIP");
 	lua_pushnumber(objs[i], (int) XYFLIP);
 	lua_setfield(objs[i], -2, "XYFLIP");
+	lua_pushnumber(objs[i], bufferSizeX);
+	lua_setfield(objs[i], -2, "SCREENWIDTH");
+	lua_pushnumber(objs[i], bufferSizeY);
+	lua_setfield(objs[i], -2, "SCREENHEIGHT");
 	luaL_setfuncs(objs[i], SuperXRender, 0);
 	lua_setglobal(objs[i], "Render");
 

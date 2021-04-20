@@ -31,6 +31,12 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 		return;
 	}
 
+	if (sx >= spriteSheetTable[sheetID].width || sx < 0 || sy >= spriteSheetTable[sheetID].height || sy < 0 ||
+			sx + width >= spriteSheetTable[sheetID].width || sy + height >= spriteSheetTable[sheetID].height) {
+		PrintLog("ERROR: (DrawSprite) Invalid sprite coordinates passed. Ignoring.\n");
+		return;
+	}
+
 	if (spriteSheetTable[sheetID].hasPalette) {
 		// TODO: implement paletted graphics first
 	} else {
