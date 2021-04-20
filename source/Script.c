@@ -117,6 +117,14 @@ int InitObject(const char* scriptName) {
 	lua_setglobal(objs[i], "Sprite");
 
 	lua_newtable(objs[i]);
+	lua_pushnumber(objs[i],  (int) NOFLIP);
+	lua_setfield(objs[i], -2, "NOFLIP");
+	lua_pushnumber(objs[i], (int) XFLIP);
+	lua_setfield(objs[i], -2, "XFLIP");
+	lua_pushnumber(objs[i], (int) YFLIP);
+	lua_setfield(objs[i], -2, "YFLIP");
+	lua_pushnumber(objs[i], (int) XYFLIP);
+	lua_setfield(objs[i], -2, "XYFLIP");
 	luaL_setfuncs(objs[i], SuperXRender, 0);
 	lua_setglobal(objs[i], "Render");
 

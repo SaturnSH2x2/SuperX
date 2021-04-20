@@ -26,6 +26,11 @@ int CreateFrameBuffer(int x, int y) {
 }
 
 void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int height, SpriteFlipFlag flag) {
+	if (x >= bufferSizeX || y >= bufferSizeY || x + width < 0 || y + height < 0) {
+		PrintLog("NOTE: DrawSprite call coordinates draw offscreen. Ignoring.\n");
+		return;
+	}
+
 	if (spriteSheetTable[sheetID].hasPalette) {
 		// TODO: implement paletted graphics first
 	} else {
@@ -37,12 +42,16 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 				srcPtr += width;
 				for (int dy = 0; dy < height; dy++) {
 					for (int dx = 0; dx < width; dx++) {
-						if (*srcPtr != 0xf81f)
+						if (*srcPtr != 0xf81f && x + dx < bufferSizeX && x + dx >= 0 &&
+								y + dy < bufferSizeY && y + dy >= 0)
 							*dstPtr = *srcPtr;
 
 						srcPtr--;
 						dstPtr++;
 					}
+
+					if (dy >= bufferSizeY)
+						break;
 
 					srcPtr += spriteSheetTable[sheetID].width + width;
 					dstPtr += bufferSizeX - width;
@@ -53,12 +62,16 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 				srcPtr += spriteSheetTable[sheetID].width * height;
 				for (int dy = 0; dy < height; dy++) {
 					for (int dx = 0; dx < width; dx++) {
-						if (*srcPtr != 0xf81f)
+						if (*srcPtr != 0xf81f && x + dx < bufferSizeX && x + dx >= 0 &&
+									y + dy < bufferSizeY && y + dy >= 0)
 							*dstPtr = *srcPtr;
 
 						srcPtr++;
 						dstPtr++;
 					}
+
+					if (dy >= bufferSizeY)
+						break;
 
 					srcPtr -= spriteSheetTable[sheetID].width + width;
 					dstPtr += bufferSizeX - width;
@@ -69,12 +82,16 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 				srcPtr += spriteSheetTable[sheetID].width * height + width;
 				for (int dy = 0; dy < height; dy++) {
 					for (int dx = 0; dx < width; dx++) {
-						if (*srcPtr != 0xf81f)
+						if (*srcPtr != 0xf81f && x + dx < bufferSizeX && x + dx >= 0
+								&& y + dy < bufferSizeY && y + dy >= 0)
 							*dstPtr = *srcPtr;
 
 						srcPtr--;
 						dstPtr++;
 					}
+
+					if (dy >= bufferSizeY)
+						break;
 
 					srcPtr -= spriteSheetTable[sheetID].width - width;
 					dstPtr += bufferSizeX - width;
@@ -84,12 +101,16 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 			default:
 				for (int dy = 0; dy < height; dy++) {
 					for (int dx = 0; dx < width; dx++) {
-						if (*srcPtr != 0xf81f) 
+						if (*srcPtr != 0xf81f && x + dx < bufferSizeX && x + dx >= 0
+								&& y + dy < bufferSizeY && y + dy >= 0) 
 							*dstPtr = *srcPtr;
 
 						srcPtr++;
 						dstPtr++;
 					}
+
+					if (dy >= bufferSizeY)
+						break;
 
 					srcPtr += spriteSheetTable[sheetID].width - width;
 					dstPtr += bufferSizeX - width;

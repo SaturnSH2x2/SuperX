@@ -81,9 +81,6 @@ int InitSuperX() {
 		return 1;
 	}
 
-	// blue
-	ClearFrameBuffer(0x0018FF);
-
 	engineState = SUPERX_MAINGAME;
 	renderType  = SUPERX_SW_RENDER;
 	frameRate   = 60;
@@ -93,15 +90,6 @@ int InitSuperX() {
 	/* testing code begins here */
 	PrintLog("Resolution: %dx%d\n", screenBuffer->w, screenBuffer->h);
 	InitObject("debug.lua");
-
-	u8 index;
-	int result = LoadSpriteSheetFromPNG("./sonic.png", &index);
-	if (result) {
-		PrintLog("ERROR: could not load png\n");
-	}
-
-	DrawSpriteSW(0, 50, 50, 1, 1, 28, 38, XYFLIP);
-
 	/* end testing code */
 
 	return 0;
