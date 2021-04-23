@@ -22,7 +22,8 @@ extern SDL_Surface* screenBuffer;
 int CreateFrameBuffer(int x, int y);
 void ClearFrameBuffer(u16 color);
 void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, 
-		int width, int height, SpriteFlipFlag flag); 
+		int width, int height, SpriteFlipFlag flag);
+void DrawRectangleSW(int x, int y, int w, int h, u16 color);
 void ReleaseFrameBuffer();
 
 // --- SDL functions ---

@@ -25,9 +25,10 @@ int CreateFrameBuffer(int x, int y) {
 	return 0;
 }
 
+// TODO: account for PivotX/PivotY
 void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int height, SpriteFlipFlag flag) {
 	if (x >= bufferSizeX || y >= bufferSizeY || x + width < 0 || y + height < 0) {
-		PrintLog("NOTE: DrawSprite call coordinates draw offscreen. Ignoring.\n");
+		//PrintLog("NOTE: DrawSprite call coordinates draw offscreen. Ignoring.\n");
 		return;
 	}
 
@@ -124,6 +125,32 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 
 				break;
 		}
+	}
+}
+
+// TODO: implementation slightly borked, fix bleed-over
+void DrawRectangleSW(int x, int y, int w, int h, u16 color) {
+	u16* ptr = (u16*) (frameBuffer) + y * bufferSizeX + x;
+	for (int dy = 0; dy < h; dy++) {
+		if (dy + y < 0) {
+			ptr += bufferSizeX;
+			continue;
+		}
+
+		if (dy + y >= bufferSizeY)
+			break;
+
+		for (int dx = 0; dx < w; dx++) {
+			if (dx + x >= bufferSizeX || dx + x < 0) {
+				ptr++;
+				continue;
+			}
+
+			*ptr = color;
+			ptr++;
+		}
+
+		ptr += bufferSizeX - w;
 	}
 }
 

@@ -50,6 +50,18 @@ void ProcessEventsSDL() {
 
 	while (SDL_PollEvent(&ev)) {
 		switch(ev.type) {
+			case SDL_KEYDOWN:
+				switch(ev.key.keysym.sym) {
+					case SDLK_F12:
+						if (engineState == SUPERX_PAUSED)
+							engineState = SUPERX_MAINGAME;
+						else
+							engineState = SUPERX_PAUSED;
+						break;
+					default:
+						break;
+				}
+				break;
 			case SDL_QUIT:
 				engineState = SUPERX_EXIT;
 				break;
@@ -105,7 +117,9 @@ void RunSuperX() {
 
 	while (engineState != SUPERX_EXIT) {
 		// script stuff
-		UpdateObjects();
+		if (engineState == SUPERX_MAINGAME) {
+			UpdateObjects();
+		}
 
 #if SDL1_USE_TIMER
 		start = SDL_GetTicks();

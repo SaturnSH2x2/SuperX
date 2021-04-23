@@ -34,8 +34,7 @@ extern "C" {
 
 /*
 	TODO: main priorities right now should be
-		1. Implement Lua scripting support (so you don't have to 
-			hard-code tests into the engine)
+		1. Add input support (doesn't have to be major for now)
 		2. Add tileset support (worry about parallax later)
 		3. Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?

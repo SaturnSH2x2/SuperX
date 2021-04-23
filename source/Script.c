@@ -27,7 +27,7 @@ static int l_loadSSFromPNG(lua_State* L) {
 
 // render
 static int l_clearFrameBuffer(lua_State* L) {
-	u32 color = (u32) luaL_checkinteger(L, 1);
+	u16 color = (u16) luaL_checkinteger(L, 1);
 	if (renderType == SUPERX_SW_RENDER)
 		ClearFrameBuffer(color);
 	else
@@ -60,6 +60,27 @@ static int l_drawSprite(lua_State* L) {
 	return 0;
 }
 
+static int l_drawRect(lua_State* L) {
+	int argcount = lua_gettop(L);
+	if (argcount < 5) {
+		PrintLog("ERROR: too few arguments to DrawRectangle\n");
+		return 0;
+	}
+
+	int x = luaL_checkinteger(L, 1);
+	int y = luaL_checkinteger(L, 2);
+	int w = luaL_checkinteger(L, 3);
+	int h = luaL_checkinteger(L, 4);
+	u16 col = (u16) luaL_checkinteger(L, 5);
+
+	if (renderType == SUPERX_SW_RENDER)
+		DrawRectangleSW(x, y, w, h, col);
+	else
+		PrintLog("NOTE: unimplemented draw call (DrawRectangle)\n");
+
+	return 0;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -76,6 +97,7 @@ static const struct luaL_reg SuperXSprite [] = {
 static const struct luaL_reg SuperXRender [] = {
 	{ "ClearScreen",	l_clearFrameBuffer },
 	{ "DrawSprite",		l_drawSprite },
+	{ "DrawRectangle",	l_drawRect },
 	{ NULL,			NULL }
 };
 
