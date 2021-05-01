@@ -7,5 +7,5 @@ using MinGW/Cygwin.
 
 ## Dependencies
  * lodepng (included as submodule)
- * SDL 1.2 (SDL 2 support planned)
+ * SDL 2
  * Lua 5.2

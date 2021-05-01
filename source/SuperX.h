@@ -9,13 +9,32 @@
 #define Sint32 s32
 #define Sint64 s64
 
-// each component of SDL 1.2 can be enabled separately
-#define SDL1_USE_TIMER (1)
-#define SDL1_USE_AUDIO (1)
-#define SDL1_USE_VIDEO (1)
-#define SDL1_USE_INPUT (1)
+/*
+ *	Generally speaking, SuperX uses SDL 2.0 for video, input, and audio. There are
+ *	some platform-specific exceptions, though.
+ *
+ *	The 3DS only has (current) support for SDL 1.2, but that should only be used for audio,
+ *	as the system will use its own custom render backend.
+ * */
 
-#define USING_SDL1 (SDL1_USE_TIMER || SDL1_USE_AUDIO || SDL1_USE_VIDEO || SDL1_USE_INPUT)
+#define SUPERX_PC    (0)
+#define SUPERX_3DS   (1)
+#define SUPERX_NX    (2)
+#define SUPERX_DC    (3)
+
+#if defined _3DS
+#define SUPERX_PLATFORM SUPERX_3DS
+#define SUPERX_USING_SDL2 (0)
+#define SUPERX_USING_SDL1 (0)
+#elif defined _DC
+#define SUPERX_PLATFORM SUPERX_DC
+#define SUPERX_USING_SDL2 (1)
+#define SUPERX_USING_SDL1 (0)
+#else
+#define SUPERX_PLATFORM SUPERX_PC
+#define SUPERX_USING_SDL2 (1)
+#define SUPERX_USING_SDL1 (0)
+#endif
 
 // --- include statements ---
 #include <stdio.h>
@@ -28,8 +47,8 @@ extern "C" {
 	#include <luaxlib.h>
 }
 
-#if USING_SDL1
-#include <SDL/SDL.h>
+#if SUPERX_PLATFORM == SUPERX_PC
+#include <SDL2/SDL.h>
 #endif
 
 /*
@@ -59,7 +78,8 @@ typedef enum {
 
 typedef enum {
 	SUPERX_SW_RENDER,
-	SUPERX_HW_RENDER
+	SUPERX_C2D_RENDER,
+	SUPERX_KOS_RENDER
 } SuperXRenderType;
 
 extern SuperXState engineState;

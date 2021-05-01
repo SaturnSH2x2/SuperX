@@ -9,33 +9,21 @@ char basePath[255];
 int frameRate;
 
 // --- SDL-dependent functions ---
-int SetupSDL(int x, int y) {
-#if SDL1_USE_AUDIO
-	if (SDL_Init(SDL_INIT_AUDIO))
+int SetupSDL(int x, int y, u32 windowFlags) {
+#if SUPERX_USING_SDL2
+	if (SDL_Init(SDL_INIT_EVERYTHING)) {
+		PrintLog("ERROR: Could not initialize SDL\n");
 		return 1;
-#endif
+	}
 
-#if SDL1_USE_VIDEO
-	if (SDL_Init(SDL_INIT_VIDEO))
-		return 1;
+	SDL_CreateWindowAndRenderer(x, y, windowFlags, &gameWindow, &renderer);
 
-	gameWindow = SDL_SetVideoMode(x, y, 16, SDL_SWSURFACE);
-	if (!gameWindow)
+	if (!gameWindow || !renderer) {
+		PrintLog("ERROR: Could not create window\n");
 		return 1;
+	}
 
-	screenBuffer = SDL_CreateRGBSurface(SDL_SWSURFACE, x, y, 16, 0, 0, 0, 0);
-	if (!screenBuffer)
-		return 1;
-#endif
-
-#if SDL1_USE_TIMER
-	if (SDL_Init(SDL_INIT_TIMER))
-		return 1;
-#endif
-
-#if SDL1_USE_INPUT
-	if (SDL_Init(SDL_INIT_JOYSTICK))
-		return 1;
+	PrintLog("Creating window of resolution %dx%d\n", x, y);
 #endif
 
 	return 0;
@@ -72,24 +60,28 @@ void ProcessEventsSDL() {
 }
 
 void CloseSDL() {
-	SDL_FreeSurface(gameWindow);
+	SDL_DestroyWindow(gameWindow);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyTexture(bufferTexture);
 	SDL_Quit();
+
+	PrintLog("Exiting SuperX...\n");
 }
 
 // --- main engine functions ---
 int InitSuperX() {
 	memset(basePath, 0, sizeof(basePath));
 
+	// TODO: resolution is also hard-coded, same as above
+	if (SetupSDL(1280, 720, 0)) {
+		PrintLog("ERROR: failed to initialize SDL\n");
+		return 1;
+	}
+
 	// TODO: fb resolution is currently hard-coded,
 	// implement code to load from config file later
 	if (CreateFrameBuffer(424, 240)) {
 		PrintLog("ERROR: failed to allocate frameBuffer\n");
-		return 1;
-	}
-
-	// TODO: resolution is also hard-coded, same as above
-	if (SetupSDL(1280, 720)) {
-		PrintLog("ERROR: failed to initialize SDL\n");
 		return 1;
 	}
 
@@ -99,10 +91,8 @@ int InitSuperX() {
 
 	isFullscreen = 0;
 
-	/* testing code begins here */
-	PrintLog("Resolution: %dx%d\n", screenBuffer->w, screenBuffer->h);
+	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua");
-	/* end testing code */
 
 	return 0;
 }
@@ -121,25 +111,15 @@ void RunSuperX() {
 			UpdateObjects();
 		}
 
-#if SDL1_USE_TIMER
 		start = SDL_GetTicks();
-#endif
-
-#if SDL1_USE_INPUT
 		ProcessEventsSDL();
-#endif
 
-#if SDL1_USE_VIDEO
-		UpdateScreenSDL();
-#endif
+		if (engineState == SUPERX_MAINGAME)
+			UpdateScreenSDL();
 
-#if SDL1_USE_TIMER
 		end = SDL_GetTicks();
 		if (end - start < 1000.0f / frameRate) {
 			SDL_Delay( (1000.0f / frameRate) - (end - start) );
 		}
-#endif
 	}
-
-	PrintLog("exiting engine...\n");
 }

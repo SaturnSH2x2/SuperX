@@ -7,8 +7,9 @@ int bufferSizeY;
 u16* frameBuffer;
 
 // --- SDL variables ---
-SDL_Surface* gameWindow;
-SDL_Surface* screenBuffer;
+SDL_Window* gameWindow;
+SDL_Renderer* renderer;
+SDL_Texture* bufferTexture;
 
 // --- frameBuffer operations (SW rendering) ---
 int CreateFrameBuffer(int x, int y) {
@@ -21,6 +22,14 @@ int CreateFrameBuffer(int x, int y) {
 
 	bufferSizeX = x;
 	bufferSizeY = y;
+
+	bufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB565, 
+				SDL_TEXTUREACCESS_STREAMING, bufferSizeX, bufferSizeY);
+	if (!bufferTexture) {
+		PrintLog("ERROR: could not allocate bufferTexture\n");
+		return 1;
+	}
+
 
 	return 0;
 }
@@ -167,28 +176,10 @@ void ReleaseFrameBuffer() {
 
 // --- SDL boilerplate code ---
 void UpdateScreenSDL() {
-	if (bufferSizeX == gameWindow->w && bufferSizeY == gameWindow->h) {
-		memcpy(screenBuffer->pixels, frameBuffer, bufferSizeX * bufferSizeY * sizeof(u16));
-	} else {
-		// TODO: this is stupid, since you're only using SDL 1.2 for 3DS audio support
-		// anyways; migrate to SDL 2 soon
-		// SDL 1.2 doesn't have any built-ins for surface scaling, so we have to do it manually
-		float xratio = gameWindow->w  / bufferSizeX;
-		float yratio = gameWindow->h  / bufferSizeY;
+	SDL_UpdateTexture(bufferTexture, NULL, frameBuffer, bufferSizeX * sizeof(u16));
 
-		u16* ptr = (u16*) screenBuffer->pixels;
-
-		for (int y = 0; y < gameWindow->h; y++) {
-			for (int x = 0; x < gameWindow->w; x++) {
-				int dx = (int) (x / xratio);
-				int dy = (int) (y / yratio);
-
-				*ptr = frameBuffer[dy * bufferSizeX + dx];
-				ptr++;
-			}
-		}
-	}
-	SDL_BlitSurface(screenBuffer, NULL, gameWindow, NULL);
-	
-	SDL_Flip(gameWindow);
+	SDL_SetRenderTarget(renderer, NULL);
+	SDL_RenderClear(renderer);
+	SDL_RenderCopy(renderer, bufferTexture, NULL, NULL);
+	SDL_RenderPresent(renderer);	
 }

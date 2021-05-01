@@ -15,8 +15,9 @@ extern int bufferSizeY;
 extern u16* frameBuffer;
 
 // --- SDL variables ---
-extern SDL_Surface* gameWindow;
-extern SDL_Surface* screenBuffer;
+extern SDL_Window* gameWindow;
+extern SDL_Renderer* renderer;
+extern SDL_Texture* bufferTexture;
 
 // --- frameBuffer functions ---
 int CreateFrameBuffer(int x, int y);
