@@ -30,7 +30,12 @@ int SetupSDL(int x, int y, u32 windowFlags) {
 }
 
 void ToggleFullscreen() {
+	if (isFullscreen)
+		SDL_SetWindowFullscreen(gameWindow, 0);
+	else
+		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
+	isFullscreen = !isFullscreen;
 }
 
 void ProcessEventsSDL() {
@@ -40,6 +45,9 @@ void ProcessEventsSDL() {
 		switch(ev.type) {
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
+					case SDLK_F4:
+						ToggleFullscreen();
+						break;
 					case SDLK_F12:
 						if (engineState == SUPERX_PAUSED)
 							engineState = SUPERX_MAINGAME;
