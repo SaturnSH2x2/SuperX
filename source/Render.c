@@ -1,8 +1,8 @@
 #include "SuperX.h"
 
 // --- frameBuffer variables ---
-int bufferSizeX;
-int bufferSizeY;
+int bufferSizeX = DEFAULT_INTERNALSIZEX;
+int bufferSizeY = DEFAULT_INTERNALSIZEY;
 
 u16* frameBuffer;
 
@@ -12,16 +12,13 @@ SDL_Renderer* renderer;
 SDL_Texture* bufferTexture;
 
 // --- frameBuffer operations (SW rendering) ---
-int CreateFrameBuffer(int x, int y) {
-	frameBuffer = (u16*) malloc(x * y * sizeof(u16));
+int CreateFrameBuffer() {
+	frameBuffer = (u16*) malloc(bufferSizeX * bufferSizeY * sizeof(u16));
 	if (!frameBuffer) {
 		return 1;	
 	}
 
 	memset(frameBuffer, 0, bufferSizeX * bufferSizeY * sizeof(u16));
-
-	bufferSizeX = x;
-	bufferSizeY = y;
 
 	bufferTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB565, 
 				SDL_TEXTUREACCESS_STREAMING, bufferSizeX, bufferSizeY);

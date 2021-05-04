@@ -40,6 +40,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <lodepng.h>
+#include <jansson.h>
 
 extern "C" {
 	#include <lua.h>
@@ -67,6 +68,7 @@ extern "C" {
 #include "Render.h"
 #include "Sprite.h"
 #include "Script.h"
+#include "Userdata.h"
 
 // --- engine variables ---
 typedef enum {
@@ -84,11 +86,13 @@ typedef enum {
 
 extern SuperXState engineState;
 extern SuperXRenderType renderType;
+extern int windowSizeX, windowSizeY;
+extern char isFullscreen;
 extern char basePath[255];
 extern int frameRate;
 
 // --- SDL functions ---
-int SetupSDL();
+int SetupSDL(u32 windowFlags);
 void ProcessEventsSDL();
 void CloseSDL();
 

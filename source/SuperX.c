@@ -3,27 +3,30 @@
 SuperXState engineState;
 SuperXRenderType renderType;
 
-char isFullscreen;
+int windowSizeX = DEFAULT_SCREENSIZEX;
+int windowSizeY = DEFAULT_SCREENSIZEY;
+
+char isFullscreen = 0;
 char basePath[255];
 
 int frameRate;
 
 // --- SDL-dependent functions ---
-int SetupSDL(int x, int y, u32 windowFlags) {
+int SetupSDL(u32 windowFlags) {
 #if SUPERX_USING_SDL2
 	if (SDL_Init(SDL_INIT_EVERYTHING)) {
 		PrintLog("ERROR: Could not initialize SDL\n");
 		return 1;
 	}
 
-	SDL_CreateWindowAndRenderer(x, y, windowFlags, &gameWindow, &renderer);
+	SDL_CreateWindowAndRenderer(windowSizeX, windowSizeY, windowFlags, &gameWindow, &renderer);
 
 	if (!gameWindow || !renderer) {
 		PrintLog("ERROR: Could not create window\n");
 		return 1;
 	}
 
-	PrintLog("Creating window of resolution %dx%d\n", x, y);
+	PrintLog("Creating window of resolution %dx%d\n", windowSizeX, windowSizeY);
 #endif
 
 	return 0;
@@ -80,15 +83,22 @@ void CloseSDL() {
 int InitSuperX() {
 	memset(basePath, 0, sizeof(basePath));
 
-	// TODO: resolution is also hard-coded, same as above
-	if (SetupSDL(1280, 720, 0)) {
+	if (LoadGameConfig()) {
+		PrintLog("ERROR: while loading config.json\n");
+		return 1;
+	}
+
+	if (SetupSDL(0)) {
 		PrintLog("ERROR: failed to initialize SDL\n");
 		return 1;
 	}
 
-	// TODO: fb resolution is currently hard-coded,
-	// implement code to load from config file later
-	if (CreateFrameBuffer(424, 240)) {
+	// lazy, but it works
+	if (isFullscreen) {
+		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+
+	if (CreateFrameBuffer()) {
 		PrintLog("ERROR: failed to allocate frameBuffer\n");
 		return 1;
 	}
@@ -96,8 +106,6 @@ int InitSuperX() {
 	engineState = SUPERX_MAINGAME;
 	renderType  = SUPERX_SW_RENDER;
 	frameRate   = 60;
-
-	isFullscreen = 0;
 
 	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua");

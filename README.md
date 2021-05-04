@@ -9,3 +9,4 @@ using MinGW/Cygwin.
  * lodepng (included as submodule)
  * SDL 2
  * Lua 5.2
+ * Jansson

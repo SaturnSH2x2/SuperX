@@ -20,7 +20,7 @@ extern SDL_Renderer* renderer;
 extern SDL_Texture* bufferTexture;
 
 // --- frameBuffer functions ---
-int CreateFrameBuffer(int x, int y);
+int CreateFrameBuffer();
 void ClearFrameBuffer(u16 color);
 void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, 
 		int width, int height, SpriteFlipFlag flag);
