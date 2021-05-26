@@ -25,6 +25,43 @@ static int l_loadSSFromPNG(lua_State* L) {
 	return 1;
 }
 
+// input
+static int l_getButtonDown(lua_State* L) {
+	int port   = luaL_checkinteger(L, 1);
+	int button = luaL_checkinteger(L, 2);
+
+	if (GetButtonDown(port, button))
+		lua_pushboolean(L, 1);
+	else
+		lua_pushboolean(L, 0);
+	
+	return 1;
+}
+
+static int l_getButtonHeld(lua_State* L) {
+	int port   = luaL_checkinteger(L, 1);
+	int button = luaL_checkinteger(L, 2);
+
+	if (GetButtonHeld(port, button))
+		lua_pushboolean(L, 1);
+	else
+		lua_pushboolean(L, 0);
+
+	return 1;
+}
+
+static int l_getButtonUp(lua_State* L) {
+	int port   = luaL_checkinteger(L, 1);
+	int button = luaL_checkinteger(L, 2);
+
+	if (GetButtonUp(port, button))
+		lua_pushboolean(L, 1);
+	else
+		lua_pushboolean(L, 0);
+
+	return 1;
+}
+
 // render
 static int l_clearFrameBuffer(lua_State* L) {
 	u16 color = (u16) luaL_checkinteger(L, 1);
@@ -94,6 +131,13 @@ static const struct luaL_reg SuperXSprite [] = {
 	{ NULL	                  , NULL            }
 };
 
+static const struct luaL_reg SuperXInput [] = {
+	{ "GetButtonDown",	l_getButtonDown },
+	{ "GetButtonHeld",	l_getButtonHeld },
+	{ "GetButtonUp",	l_getButtonUp   },
+	{ NULL,			NULL		}
+};
+
 static const struct luaL_reg SuperXRender [] = {
 	{ "ClearScreen",	l_clearFrameBuffer },
 	{ "DrawSprite",		l_drawSprite },
@@ -133,6 +177,34 @@ int InitObject(const char* scriptName) {
 	lua_newtable(objs[i]);
 	luaL_setfuncs(objs[i], SuperXDebug, 0);
 	lua_setglobal(objs[i], "Debug");
+
+	lua_newtable(objs[i]);
+	lua_pushnumber(objs[i], BUTTON_B);
+	lua_setfield(objs[i], -2, "B");
+	lua_pushnumber(objs[i], BUTTON_A);
+	lua_setfield(objs[i], -2, "A");
+	lua_pushnumber(objs[i], BUTTON_X);
+	lua_setfield(objs[i], -2, "X");
+	lua_pushnumber(objs[i], BUTTON_Y);
+	lua_setfield(objs[i], -2, "Y");
+	lua_pushnumber(objs[i], BUTTON_L);
+	lua_setfield(objs[i], -2, "L");
+	lua_pushnumber(objs[i], BUTTON_R);
+	lua_setfield(objs[i], -2, "R");
+	lua_pushnumber(objs[i], BUTTON_START);
+	lua_setfield(objs[i], -2, "Start");
+	lua_pushnumber(objs[i], BUTTON_SELECT);
+	lua_setfield(objs[i], -2, "Select");
+	lua_pushnumber(objs[i], BUTTON_UP);
+	lua_setfield(objs[i], -2, "Up");
+	lua_pushnumber(objs[i], BUTTON_DOWN);
+	lua_setfield(objs[i], -2, "Down");
+	lua_pushnumber(objs[i], BUTTON_LEFT);
+	lua_setfield(objs[i], -2, "Left");
+	lua_pushnumber(objs[i], BUTTON_RIGHT);
+	lua_setfield(objs[i], -2, "Right");
+	luaL_setfuncs(objs[i], SuperXInput, 0);
+	lua_setglobal(objs[i], "Input");
 
 	lua_newtable(objs[i]);
 	luaL_setfuncs(objs[i], SuperXSprite, 0);

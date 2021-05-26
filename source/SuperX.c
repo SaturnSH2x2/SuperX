@@ -52,6 +52,12 @@ void ProcessEventsSDL() {
 			case SDL_CONTROLLERDEVICEREMOVED:
 				HandleControllerDisconnect(&ev);
 				break;
+			case SDL_CONTROLLERBUTTONDOWN:
+				UpdateController(ev.cbutton.which, ev.cbutton.button, 1);
+				break;
+			case SDL_CONTROLLERBUTTONUP:
+				UpdateController(ev.cbutton.which, ev.cbutton.button, 0);
+				break;
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
 					case SDLK_F4:
@@ -132,16 +138,22 @@ void RunSuperX() {
 	int start, end;
 
 	while (engineState != SUPERX_EXIT) {
-		// script stuff
-		if (engineState == SUPERX_MAINGAME) {
-			UpdateObjects();
-		}
+		// reset keydown/keyup
+		memset(down, 0, MAX_GAMEPADS * 12);
+		memset(up,   0, MAX_GAMEPADS * 12);
 
 		start = SDL_GetTicks();
+
+		// get input before running scripts
 		ProcessEventsSDL();
 
 		if (engineState == SUPERX_MAINGAME)
 			UpdateScreenSDL();
+
+		// script stuff
+		if (engineState == SUPERX_MAINGAME) {
+			UpdateObjects();
+		}
 
 		end = SDL_GetTicks();
 		if (end - start < 1000.0f / frameRate) {
