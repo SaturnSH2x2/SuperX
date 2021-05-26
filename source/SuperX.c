@@ -46,6 +46,12 @@ void ProcessEventsSDL() {
 
 	while (SDL_PollEvent(&ev)) {
 		switch(ev.type) {
+			case SDL_CONTROLLERDEVICEADDED:
+				HandleControllerConnect(&ev);
+				break;
+			case SDL_CONTROLLERDEVICEREMOVED:
+				HandleControllerDisconnect(&ev);
+				break;
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
 					case SDLK_F4:
@@ -93,7 +99,11 @@ int InitSuperX() {
 		return 1;
 	}
 
-	// lazy, but it works
+	if (InitControllerInput()) {
+		PrintLog("ERROR: could not initialize controller input\n");
+		return 1;
+	}
+
 	if (isFullscreen) {
 		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}

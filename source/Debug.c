@@ -8,7 +8,7 @@ void PrintLog(const char* str, ...) {
 	va_list args;
 	va_start(args, str);
 	vsprintf(buf, str, args);
-	printf("%s\n", buf);
+	printf("%s", buf);
 
 	// TODO: implement this right at some point
 	//char fPath[0x100];

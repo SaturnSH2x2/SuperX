@@ -69,6 +69,7 @@ extern "C" {
 #include "Sprite.h"
 #include "Script.h"
 #include "Userdata.h"
+#include "Input.h"
 
 // --- engine variables ---
 typedef enum {
