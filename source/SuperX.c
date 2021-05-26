@@ -110,6 +110,10 @@ int InitSuperX() {
 		return 1;
 	}
 
+	if (InitAudio()) {
+		PrintLog("NOTE: audio playback disabled\n");
+	}
+
 	if (isFullscreen) {
 		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
@@ -131,6 +135,7 @@ int InitSuperX() {
 
 void CloseSuperX() {
 	ReleaseFrameBuffer();
+	CloseAudio();
 	CloseSDL();
 }
 

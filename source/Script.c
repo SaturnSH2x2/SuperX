@@ -62,6 +62,23 @@ static int l_getButtonUp(lua_State* L) {
 	return 1;
 }
 
+// audio
+static int l_playMusic(lua_State* L) {
+	const char* filename = luaL_checkstring(L, 1);
+
+	if (PlayMusic(filename))
+		lua_pushboolean(L, 0);
+	else
+		lua_pushboolean(L, 1);
+
+	return 1;
+}
+
+static int l_closeMusic(lua_State* L) {
+	CloseMusic();
+	return 0;
+}
+
 // render
 static int l_clearFrameBuffer(lua_State* L) {
 	u16 color = (u16) luaL_checkinteger(L, 1);
@@ -138,6 +155,12 @@ static const struct luaL_reg SuperXInput [] = {
 	{ NULL,			NULL		}
 };
 
+static const struct luaL_reg SuperXAudio [] = {
+	{ "PlayMusic",		l_playMusic  },
+	{ "CloseMusic",		l_closeMusic },
+	{ NULL,			NULL	     }
+};
+
 static const struct luaL_reg SuperXRender [] = {
 	{ "ClearScreen",	l_clearFrameBuffer },
 	{ "DrawSprite",		l_drawSprite },
@@ -209,6 +232,10 @@ int InitObject(const char* scriptName) {
 	lua_newtable(objs[i]);
 	luaL_setfuncs(objs[i], SuperXSprite, 0);
 	lua_setglobal(objs[i], "Sprite");
+
+	lua_newtable(objs[i]);
+	luaL_setfuncs(objs[i], SuperXAudio, 0);
+	lua_setglobal(objs[i], "Audio");
 
 	lua_newtable(objs[i]);
 	lua_pushnumber(objs[i],  (int) NOFLIP);

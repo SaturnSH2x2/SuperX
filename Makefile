@@ -4,8 +4,8 @@
 CC       := gcc
 CXX      := g++
 CFLAGS   := -g -Wall -O2
-INCLUDES := -I/usr/include/lua5.2
-LIBS_ALL := -llua5.2 -lSDL
+INCLUDES := -I/usr/include/lua5.2 -I./lodepng
+LIBS_ALL := -llua5.2 -ljansson -lSDL2_mixer -lSDL2
 
 SOURCES := $(wildcard source/*.c) lodepng/lodepng.cpp
 

@@ -50,14 +50,16 @@ extern "C" {
 
 #if SUPERX_PLATFORM == SUPERX_PC
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #endif
 
 /*
 	TODO: main priorities right now should be
-		1. Add input support (doesn't have to be major for now)
+		1. Add keyboard input support
 		2. Add tileset support (worry about parallax later)
 		3. Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
+		4. Add audio support (music/sound effects).
 
 	Actually implementing 2D Sonic physics comes later.
 */
@@ -70,6 +72,7 @@ extern "C" {
 #include "Script.h"
 #include "Userdata.h"
 #include "Input.h"
+#include "Audio.h"
 
 // --- engine variables ---
 typedef enum {
