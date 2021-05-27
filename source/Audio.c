@@ -1,6 +1,7 @@
 #include "SuperX.h"
 
 u8 audioEnabled;
+u8 musicPlaying;
 Mix_Music* musicTrack;
 
 int InitAudio() {
@@ -19,6 +20,7 @@ int InitAudio() {
 	}
 
 	audioEnabled = 1;
+	musicPlaying = 0;
 	return 0;
 }
 
@@ -40,7 +42,26 @@ int PlayMusic(const char* filename) {
 		return 1;
 	}
 
+	musicPlaying = 1;
 	return 0;
+}
+
+int IsMusicPlaying() {
+	return (int) musicPlaying;
+}
+
+void PauseMusic() {
+	if (musicPlaying && musicTrack) {
+		Mix_PauseMusic();
+		musicPlaying = 0;
+	}
+}
+
+void ResumeMusic() {
+	if (!musicPlaying && musicTrack) {
+		Mix_ResumeMusic();
+		musicPlaying = 1;
+	}
 }
 
 void CloseMusic() {

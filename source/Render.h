@@ -25,6 +25,8 @@ void ClearFrameBuffer(u16 color);
 void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, 
 		int width, int height, SpriteFlipFlag flag);
 void DrawRectangleSW(int x, int y, int w, int h, u16 color);
+void DrawText(int x, int y, u16 color, const char* text, ...);
+void DrawCharacterSW(int x, int y, char c, u16 color);
 void ReleaseFrameBuffer();
 
 // --- SDL functions ---

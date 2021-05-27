@@ -1,4 +1,5 @@
 #include "SuperX.h"
+#include "SystemText.h"
 
 // --- frameBuffer variables ---
 int bufferSizeX = DEFAULT_INTERNALSIZEX;
@@ -157,6 +158,54 @@ void DrawRectangleSW(int x, int y, int w, int h, u16 color) {
 		}
 
 		ptr += bufferSizeX - w;
+	}
+}
+
+void DrawCharacterSW(int x, int y, char c, u16 color) {
+	char* src = (char*) (fontPixelData) + (c * FONTCHR_WIDTH);
+	u16* dst = (u16*) (frameBuffer) + y * bufferSizeX + x;
+	for (int dy = 0; dy < FONTCHR_HEIGHT; dy++) {
+		if (y + dy < 0 || y + dy >= bufferSizeY) {
+			dst += bufferSizeX - FONTCHR_WIDTH;
+			src += FONTDATA_WIDTH - FONTCHR_WIDTH;
+			continue;
+		}
+
+		for (int dx = 0; dx < FONTCHR_WIDTH; dx++) {
+			if (x + dx < 0 || x + dx >= bufferSizeX) {
+				src++;
+				dst++;
+				continue;
+			}
+
+			if (*src == 1) 
+				*dst = color;
+
+			src++;
+			dst++;
+		}
+
+		dst += bufferSizeX - FONTCHR_WIDTH;
+		src += FONTDATA_WIDTH - FONTCHR_WIDTH;
+	}
+}
+
+void DrawText(int x, int y, u16 color, const char* text, ...) {
+	char buf[0x100];
+
+	va_list args;
+	va_start(args, text);
+	vsprintf(buf, text, args);	
+
+	char* s = (char*) buf;
+	int px = x;
+	while (*s != '\0') {
+		if (renderType == SUPERX_SW_RENDER) {
+			DrawCharacterSW(px, y, *s, color);
+		}
+
+		s++;
+		px += FONTCHR_WIDTH + 1;
 	}
 }
 

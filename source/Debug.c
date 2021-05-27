@@ -21,3 +21,22 @@ void PrintLog(const char* str, ...) {
 		fClose(f);
 	}
 }
+
+void InitDevMenu() {
+	PauseMusic();
+	
+	static const int width = 320;
+	static const int height = 175;
+	int devXPos = bufferSizeX / 2 - (width / 2);
+	int devYPos = bufferSizeY / 2 - (height / 2);
+
+	if (renderType == SUPERX_SW_RENDER) {
+		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
+	}
+
+	DrawText(devXPos + 8, devYPos + 8, 0xffff, "WELCOME TO SUPERX DEV MENU");
+}
+
+void RunDevMenu() {
+
+}

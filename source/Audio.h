@@ -11,6 +11,9 @@ int InitAudio();
 void CloseAudio();
 
 int PlayMusic(const char* filename);
+int IsMusicPlaying();
+void PauseMusic();
+void ResumeMusic();
 void CloseMusic();
 
 #endif

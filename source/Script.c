@@ -79,6 +79,16 @@ static int l_closeMusic(lua_State* L) {
 	return 0;
 }
 
+static int l_pauseMusic(lua_State* L) {
+	PauseMusic();
+	return 0;
+}
+
+static int l_resumeMusic(lua_State* L) {
+	ResumeMusic();
+	return 0;
+}
+
 // render
 static int l_clearFrameBuffer(lua_State* L) {
 	u16 color = (u16) luaL_checkinteger(L, 1);
@@ -135,6 +145,16 @@ static int l_drawRect(lua_State* L) {
 	return 0;
 }
 
+static int l_drawText(lua_State* L) {
+	const char* s = luaL_checkstring(L, 1);
+	int x         = luaL_checkinteger(L, 2);
+	int y         = luaL_checkinteger(L, 3);
+	u16 color     = (u16) luaL_checkinteger(L, 4);
+
+	DrawText(x, y, color, s);
+	return 0;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -156,15 +176,18 @@ static const struct luaL_reg SuperXInput [] = {
 };
 
 static const struct luaL_reg SuperXAudio [] = {
-	{ "PlayMusic",		l_playMusic  },
-	{ "CloseMusic",		l_closeMusic },
-	{ NULL,			NULL	     }
+	{ "PlayMusic",		l_playMusic   },
+	{ "CloseMusic",		l_closeMusic  },
+	{ "PauseMusic",		l_pauseMusic  },
+	{ "ResumeMusic",	l_resumeMusic },
+	{ NULL,			NULL	      }
 };
 
 static const struct luaL_reg SuperXRender [] = {
 	{ "ClearScreen",	l_clearFrameBuffer },
 	{ "DrawSprite",		l_drawSprite },
 	{ "DrawRectangle",	l_drawRect },
+	{ "DrawText",		l_drawText },
 	{ NULL,			NULL }
 };
 

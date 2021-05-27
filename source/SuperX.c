@@ -60,6 +60,15 @@ void ProcessEventsSDL() {
 				break;
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						if (engineState == SUPERX_DEVMENU) {
+							ResumeMusic();
+							engineState = SUPERX_MAINGAME;
+						} else {
+							InitDevMenu();
+							engineState = SUPERX_DEVMENU;
+						}
+						break;
 					case SDLK_F4:
 						ToggleFullscreen();
 						break;
@@ -152,13 +161,18 @@ void RunSuperX() {
 		// get input before running scripts
 		ProcessEventsSDL();
 
-		if (engineState == SUPERX_MAINGAME)
-			UpdateScreenSDL();
+		switch (engineState) {
+			case SUPERX_MAINGAME:
+				UpdateObjects();
+				break;
+			case SUPERX_DEVMENU:
+				RunDevMenu();
+				break;
+			default:
+				break;
+		};
 
-		// script stuff
-		if (engineState == SUPERX_MAINGAME) {
-			UpdateObjects();
-		}
+		UpdateScreenSDL();
 
 		end = SDL_GetTicks();
 		if (end - start < 1000.0f / frameRate) {

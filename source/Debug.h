@@ -2,5 +2,7 @@
 #define DEBUG_HPP
 
 void PrintLog(const char* str, ...);
+void InitDevMenu();
+void RunDevMenu();
 
 #endif
