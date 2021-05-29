@@ -89,6 +89,23 @@ static int l_resumeMusic(lua_State* L) {
 	return 0;
 }
 
+static int l_loadSoundEffect(lua_State* L) {
+	int index;
+	const char* filename = luaL_checkstring(L, 1);
+	
+	LoadSoundEffect(filename, &index);
+	lua_pushnumber(L, index);
+
+	return 1;
+}
+
+static int l_playSoundEffect(lua_State* L) {
+	int index = luaL_checkinteger(L, 1);
+	PlaySoundEffect(index);
+
+	return 0;
+}
+
 // render
 static int l_clearFrameBuffer(lua_State* L) {
 	u16 color = (u16) luaL_checkinteger(L, 1);
@@ -176,11 +193,13 @@ static const struct luaL_reg SuperXInput [] = {
 };
 
 static const struct luaL_reg SuperXAudio [] = {
-	{ "PlayMusic",		l_playMusic   },
-	{ "CloseMusic",		l_closeMusic  },
-	{ "PauseMusic",		l_pauseMusic  },
-	{ "ResumeMusic",	l_resumeMusic },
-	{ NULL,			NULL	      }
+	{ "PlayMusic",		l_playMusic       },
+	{ "CloseMusic",		l_closeMusic      },
+	{ "PauseMusic",		l_pauseMusic      },
+	{ "ResumeMusic",	l_resumeMusic 	  },
+	{ "LoadSoundEffect",	l_loadSoundEffect },
+	{ "PlaySoundEffect",	l_playSoundEffect },
+	{ NULL,			NULL	          }
 };
 
 static const struct luaL_reg SuperXRender [] = {

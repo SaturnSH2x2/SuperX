@@ -58,14 +58,14 @@ extern "C" {
 #endif
 
 /*
-	TODO: main priorities right now should be
-		1. Add keyboard input support
-		2. Add tileset support (worry about parallax later)
+	TODO: just a general laundry list of stuff to implement
+		1. Scene loading from .tmx files (should be top priority)
+		2. Add keyboard input support (some people don't have controllers)
 		3. Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
-		4. Add audio support (music/sound effects).
 
-	Actually implementing 2D Sonic physics comes later.
+	Actually implementing 2D Sonic physics comes later (and shouldn't be hard-coded
+	into the engine)
 */
 
 #include "String.h"
