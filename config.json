@@ -1,9 +1,9 @@
 {
 	"display": {
-		"internal-screen-width": 512, 
-		"internal-screen-height": 288, 
+		"internal-screen-width": 424, 
+		"internal-screen-height": 240, 
 		"window-width": 1280, 
 		"window-height": 720, 
-		"fullscreen": true
+		"fullscreen": false
 	}
 }

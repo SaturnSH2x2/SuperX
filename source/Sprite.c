@@ -52,6 +52,8 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	spriteSheetTable[*sheetIndex].height = height;
 	spriteSheetTable[*sheetIndex].hasPalette = 0;
 
+	PrintLog("NOTE: Loading %s into index %d, w: %d, h: %d\n", fileName, *sheetIndex, width, height);
+
 	// free original pixel data
 	free(pixelData);
 
