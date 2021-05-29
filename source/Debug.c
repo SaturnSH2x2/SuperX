@@ -35,6 +35,7 @@ void InitDevMenu() {
 	}
 
 	DrawText(devXPos + 8, devYPos + 8, 0xffff, "WELCOME TO SUPERX DEV MENU");
+	DrawText(devXPos + 8, devYPos + 17, 0xffff, "SuperX, commit: %s", COMMIT);
 }
 
 void RunDevMenu() {

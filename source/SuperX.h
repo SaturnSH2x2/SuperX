@@ -22,6 +22,10 @@
 #define SUPERX_NX    (2)
 #define SUPERX_DC    (3)
 
+#ifndef COMMIT
+#define COMMIT "unknown"
+#endif
+
 #if defined _3DS
 #define SUPERX_PLATFORM SUPERX_3DS
 #define SUPERX_USING_SDL2 (0)
