@@ -330,7 +330,7 @@ void UpdateObjects() {
 		lua_getglobal(objs[i], "update");
 		if (lua_pcall(objs[i], 0, 0, 0)) {
 			lua_getglobal(objs[i], "update");
-			if (!lua_isfunction(objs[i], 1))
+			if (!lua_isfunction(objs[i], -1))
 				continue;
 
 			engineState = SUPERX_SCRIPTERROR;
