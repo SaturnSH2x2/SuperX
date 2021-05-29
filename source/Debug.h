@@ -4,5 +4,6 @@
 void PrintLog(const char* str, ...);
 void InitDevMenu();
 void RunDevMenu();
+void DisplayScriptError(int objIndex);
 
 #endif

@@ -61,7 +61,8 @@ void ProcessEventsSDL() {
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
 					case SDLK_ESCAPE:
-						if (engineState == SUPERX_DEVMENU) {
+						if (engineState == SUPERX_DEVMENU ||
+						    engineState == SUPERX_SCRIPTERROR) {
 							ResumeMusic();
 							engineState = SUPERX_MAINGAME;
 						} else {

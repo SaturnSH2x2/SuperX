@@ -82,6 +82,7 @@ extern "C" {
 typedef enum {
 	SUPERX_MAINGAME,
 	SUPERX_DEVMENU,
+	SUPERX_SCRIPTERROR,
 	SUPERX_PAUSED,
 	SUPERX_EXIT
 } SuperXState;

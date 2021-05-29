@@ -190,7 +190,7 @@ void DrawCharacterSW(int x, int y, char c, u16 color) {
 	}
 }
 
-void DrawText(int x, int y, u16 color, const char* text, ...) {
+void DrawText(int x, int y, u16 color, int width, const char* text, ...) {
 	char buf[0x100];
 
 	va_list args;
@@ -199,13 +199,22 @@ void DrawText(int x, int y, u16 color, const char* text, ...) {
 
 	char* s = (char*) buf;
 	int px = x;
+	int py = y;
+	int w = 0;
 	while (*s != '\0') {
 		if (renderType == SUPERX_SW_RENDER) {
-			DrawCharacterSW(px, y, *s, color);
+			DrawCharacterSW(px, py, *s, color);
 		}
 
 		s++;
+		w += 9;
 		px += FONTCHR_WIDTH + 1;
+
+		if (w >= width && width != -1) {
+			w = 0;
+			px = x;
+			py += FONTCHR_HEIGHT + 1;
+		}
 	}
 }
 

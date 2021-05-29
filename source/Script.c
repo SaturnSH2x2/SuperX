@@ -168,7 +168,7 @@ static int l_drawText(lua_State* L) {
 	int y         = luaL_checkinteger(L, 3);
 	u16 color     = (u16) luaL_checkinteger(L, 4);
 
-	DrawText(x, y, color, s);
+	DrawText(x, y, color, -1, s);
 	return 0;
 }
 
@@ -230,12 +230,14 @@ int InitObject(const char* scriptName) {
 
 	
 	if (luaL_loadfile(objs[i], scriptName)) {
-		PrintLog("ERROR: %s\n", lua_tostring(objs[i], -1));
+		engineState = SUPERX_SCRIPTERROR;
+		DisplayScriptError(i);
 		return 1;
 	}
 
 	if (lua_pcall(objs[i], 0, 0, 0)) {
-		PrintLog("ERROR: %s\n", lua_tostring(objs[i], -1));
+		engineState = SUPERX_SCRIPTERROR;
+		DisplayScriptError(i);
 		return 1;
 	}
 
@@ -295,9 +297,11 @@ int InitObject(const char* scriptName) {
 	luaL_setfuncs(objs[i], SuperXRender, 0);
 	lua_setglobal(objs[i], "Render");
 
+	// the script may not necessarily have an init function so 
+	// we don't throw an error for this
 	lua_getglobal(objs[i], "init");
 	if (lua_pcall(objs[i], 0, 0, 0)) {
-		PrintLog("ERROR: %s\n", lua_tostring(objs[i], -1));
+		PrintLog("NOTE: %s\n", lua_tostring(objs[i], -1));
 	}
 
 	objectCount++;
@@ -325,7 +329,12 @@ void UpdateObjects() {
 
 		lua_getglobal(objs[i], "update");
 		if (lua_pcall(objs[i], 0, 0, 0)) {
-			PrintLog("ERROR: %s\n", lua_tostring(objs[i], -1));
+			lua_getglobal(objs[i], "update");
+			if (!lua_isfunction(objs[i], 1))
+				continue;
+
+			engineState = SUPERX_SCRIPTERROR;
+			DisplayScriptError(i);
 		}
 	}
 }
