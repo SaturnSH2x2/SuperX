@@ -10,3 +10,4 @@ using MinGW/Cygwin.
  * SDL 2
  * Lua 5.2
  * Jansson
+ * ![tmxparser](https://github.com/sainteos/tmxparser)

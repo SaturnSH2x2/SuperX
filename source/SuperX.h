@@ -45,6 +45,7 @@
 #include <stdlib.h>
 #include <lodepng.h>
 #include <jansson.h>
+#include <Tmx.h>
 
 extern "C" {
 	#include <lua.h>
