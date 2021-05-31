@@ -174,12 +174,13 @@ static int l_drawText(lua_State* L) {
 }
 
 static int l_buildColor(lua_State* L) {
-	int r = luaL_checkinteger(L, 1);
-	int g = luaL_checkinteger(L, 2);
-	int b = luaL_checkinteger(L, 3);
-	
-	u32 builtColor = ((b << 16) | (g << 8) | (r)) | 0xff000000;
-	lua_pushnumber(L, RGBA8_to_RGB565(builtColor));
+	u32 r = (u32) luaL_checkinteger(L, 1);
+	u32 g = (u32) luaL_checkinteger(L, 2) << 8;
+	u32 b = (u32) luaL_checkinteger(L, 3) << 16;
+	u32 a = (u32) 0xff << 24;
+
+	u32 builtColor = a | b | g | r;
+	lua_pushnumber(L, (u32) RGBA8_to_RGB565(builtColor));
 
 	return 1;
 }
