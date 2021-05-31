@@ -1,6 +1,6 @@
 #include "SuperX.h"
 
-static const int width = 400;
+static const int width = 320;
 static const int height = 175;
 
 // heavily based on RSDKv3 decomp's logging function

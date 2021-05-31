@@ -63,6 +63,8 @@ extern "C" {
 		2. Add keyboard input support (some people don't have controllers)
 		3. Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
+		4. Implement color palettes, as well as automatic detection of color
+		   palettes (so that indexed images aren't strictly necessary)
 
 	Actually implementing 2D Sonic physics comes later (and shouldn't be hard-coded
 	into the engine)

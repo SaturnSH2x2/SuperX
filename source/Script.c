@@ -3,6 +3,7 @@
 int objectCount;
 lua_State* objs[MAX_OBJECTS] = { NULL };
 
+// TODO: raise errors on some with two few arguments
 // --- begin Lua wrapper functions ---
 
 // debug
@@ -172,6 +173,17 @@ static int l_drawText(lua_State* L) {
 	return 0;
 }
 
+static int l_buildColor(lua_State* L) {
+	int r = luaL_checkinteger(L, 1);
+	int g = luaL_checkinteger(L, 2);
+	int b = luaL_checkinteger(L, 3);
+	
+	u32 builtColor = ((b << 16) | (g << 8) | (r)) | 0xff000000;
+	lua_pushnumber(L, RGBA8_to_RGB565(builtColor));
+
+	return 1;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -207,6 +219,7 @@ static const struct luaL_reg SuperXRender [] = {
 	{ "DrawSprite",		l_drawSprite },
 	{ "DrawRectangle",	l_drawRect },
 	{ "DrawText",		l_drawText },
+	{ "BuildColor",		l_buildColor },
 	{ NULL,			NULL }
 };
 
