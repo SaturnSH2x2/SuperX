@@ -54,13 +54,14 @@ void DisplayScriptError(int objIndex) {
 		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
 	}
 
-	const char* errMsg = lua_tostring(L, -1);
+	const char* errMsg1 = lua_tostring(L, -1);
+	const char* errMsg2 = lua_tostring(L, -2);
 
-	DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "SCRIPT ERROR");
-	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 8, errMsg);
-	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 8, "The object in question will be disabled.");
+	DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 16, "SCRIPT ERROR");
+	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 16, "%s %s", errMsg1, errMsg2);
+	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 16, "Object will be disabled.");
 
 	lua_close(L);
 
-	PrintLog("ERROR: %s\n", errMsg);
+	PrintLog("ERROR: %s%s\n", errMsg1, errMsg2);
 }

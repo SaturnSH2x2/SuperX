@@ -3,7 +3,6 @@
 int objectCount;
 lua_State* objs[MAX_OBJECTS] = { NULL };
 
-// TODO: raise errors on some with two few arguments
 // --- begin Lua wrapper functions ---
 
 // debug
@@ -119,12 +118,6 @@ static int l_clearFrameBuffer(lua_State* L) {
 }
 
 static int l_drawSprite(lua_State* L) {
-	int argcount = lua_gettop(L);
-	if (argcount < 8) {
-		PrintLog("ERROR: too few arguments to DrawSprite\n");
-		return 0;
-	}
-
 	int sid = luaL_checkinteger(L, 1);
 	int x   = luaL_checkinteger(L, 2);
 	int y   = luaL_checkinteger(L, 3);
@@ -143,12 +136,6 @@ static int l_drawSprite(lua_State* L) {
 }
 
 static int l_drawRect(lua_State* L) {
-	int argcount = lua_gettop(L);
-	if (argcount < 5) {
-		PrintLog("ERROR: too few arguments to DrawRectangle\n");
-		return 0;
-	}
-
 	int x = luaL_checkinteger(L, 1);
 	int y = luaL_checkinteger(L, 2);
 	int w = luaL_checkinteger(L, 3);
@@ -315,7 +302,11 @@ int InitObject(const char* scriptName) {
 	// we don't throw an error for this
 	lua_getglobal(objs[i], "init");
 	if (lua_pcall(objs[i], 0, 0, 0)) {
-		PrintLog("NOTE: %s\n", lua_tostring(objs[i], -1));
+		lua_getglobal(objs[i], "init");
+		if (lua_isfunction(objs[i], -1)) {
+			engineState = SUPERX_SCRIPTERROR;
+			DisplayScriptError(i);
+		}
 	}
 
 	objectCount++;
