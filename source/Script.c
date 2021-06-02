@@ -1,7 +1,6 @@
 #include "SuperX.h"
 
-int objectCount;
-lua_State* objs[MAX_OBJECTS] = { NULL };
+lua_State* objs[SPRITE_LAYER_COUNT][MAX_OBJECTS] = { NULL };
 
 // --- begin Lua wrapper functions ---
 
@@ -211,11 +210,69 @@ static const struct luaL_reg SuperXRender [] = {
 	{ NULL,			NULL }
 };
 
+void SetupAPI(lua_State* L) {
+	lua_newtable(L);
+	luaL_setfuncs(L, SuperXDebug, 0);
+	lua_setglobal(L, "Debug");
+
+	lua_newtable(L);
+	lua_pushnumber(L, BUTTON_B);
+	lua_setfield(L, -2, "B");
+	lua_pushnumber(L, BUTTON_A);
+	lua_setfield(L, -2, "A");
+	lua_pushnumber(L, BUTTON_X);
+	lua_setfield(L, -2, "X");
+	lua_pushnumber(L, BUTTON_Y);
+	lua_setfield(L, -2, "Y");
+	lua_pushnumber(L, BUTTON_L);
+	lua_setfield(L, -2, "L");
+	lua_pushnumber(L, BUTTON_R);
+	lua_setfield(L, -2, "R");
+	lua_pushnumber(L, BUTTON_START);
+	lua_setfield(L, -2, "Start");
+	lua_pushnumber(L, BUTTON_SELECT);
+	lua_setfield(L, -2, "Select");
+	lua_pushnumber(L, BUTTON_UP);
+	lua_setfield(L, -2, "Up");
+	lua_pushnumber(L, BUTTON_DOWN);
+	lua_setfield(L, -2, "Down");
+	lua_pushnumber(L, BUTTON_LEFT);
+	lua_setfield(L, -2, "Left");
+	lua_pushnumber(L, BUTTON_RIGHT);
+	lua_setfield(L, -2, "Right");
+	luaL_setfuncs(L, SuperXInput, 0);
+	lua_setglobal(L, "Input");
+
+	lua_newtable(L);
+	luaL_setfuncs(L, SuperXSprite, 0);
+	lua_setglobal(L, "Sprite");
+
+	lua_newtable(L);
+	luaL_setfuncs(L, SuperXAudio, 0);
+	lua_setglobal(L, "Audio");
+
+	lua_newtable(L);
+	lua_pushnumber(L,  (int) NOFLIP);
+	lua_setfield(L, -2, "NOFLIP");
+	lua_pushnumber(L, (int) XFLIP);
+	lua_setfield(L, -2, "XFLIP");
+	lua_pushnumber(L, (int) YFLIP);
+	lua_setfield(L, -2, "YFLIP");
+	lua_pushnumber(L, (int) XYFLIP);
+	lua_setfield(L, -2, "XYFLIP");
+	lua_pushnumber(L, bufferSizeX);
+	lua_setfield(L, -2, "SCREENWIDTH");
+	lua_pushnumber(L, bufferSizeY);
+	lua_setfield(L, -2, "SCREENHEIGHT");
+	luaL_setfuncs(L, SuperXRender, 0);
+	lua_setglobal(L, "Render");
+}
+
 // --- end Lua library definitions ---
-int InitObject(const char* scriptName) {
+int InitObject(const char* scriptName, int sLayer) {
 	int i = -1;
 	for (int x = 0; x < MAX_OBJECTS; x++) {
-		if (objs[x] == NULL) {
+		if (objs[sLayer][x] == NULL) {
 			i = x;
 			break;
 		}
@@ -226,122 +283,66 @@ int InitObject(const char* scriptName) {
 		return 1;
 	}
 
-	objs[i] = luaL_newstate();
-	luaL_openlibs(objs[i]);
-
+	objs[sLayer][i] = luaL_newstate();
+	luaL_openlibs(objs[sLayer][i]);
 	
-	if (luaL_loadfile(objs[i], scriptName)) {
+	if (luaL_loadfile(objs[sLayer][i], scriptName)) {
 		engineState = SUPERX_SCRIPTERROR;
-		DisplayScriptError(i);
+		DisplayScriptError(i, sLayer);
 		return 1;
 	}
 
-	if (lua_pcall(objs[i], 0, 0, 0)) {
+	SetupAPI(objs[sLayer][i]);
+
+	if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
 		engineState = SUPERX_SCRIPTERROR;
-		DisplayScriptError(i);
+		DisplayScriptError(i, sLayer);
 		return 1;
 	}
-
-	lua_newtable(objs[i]);
-	luaL_setfuncs(objs[i], SuperXDebug, 0);
-	lua_setglobal(objs[i], "Debug");
-
-	lua_newtable(objs[i]);
-	lua_pushnumber(objs[i], BUTTON_B);
-	lua_setfield(objs[i], -2, "B");
-	lua_pushnumber(objs[i], BUTTON_A);
-	lua_setfield(objs[i], -2, "A");
-	lua_pushnumber(objs[i], BUTTON_X);
-	lua_setfield(objs[i], -2, "X");
-	lua_pushnumber(objs[i], BUTTON_Y);
-	lua_setfield(objs[i], -2, "Y");
-	lua_pushnumber(objs[i], BUTTON_L);
-	lua_setfield(objs[i], -2, "L");
-	lua_pushnumber(objs[i], BUTTON_R);
-	lua_setfield(objs[i], -2, "R");
-	lua_pushnumber(objs[i], BUTTON_START);
-	lua_setfield(objs[i], -2, "Start");
-	lua_pushnumber(objs[i], BUTTON_SELECT);
-	lua_setfield(objs[i], -2, "Select");
-	lua_pushnumber(objs[i], BUTTON_UP);
-	lua_setfield(objs[i], -2, "Up");
-	lua_pushnumber(objs[i], BUTTON_DOWN);
-	lua_setfield(objs[i], -2, "Down");
-	lua_pushnumber(objs[i], BUTTON_LEFT);
-	lua_setfield(objs[i], -2, "Left");
-	lua_pushnumber(objs[i], BUTTON_RIGHT);
-	lua_setfield(objs[i], -2, "Right");
-	luaL_setfuncs(objs[i], SuperXInput, 0);
-	lua_setglobal(objs[i], "Input");
-
-	lua_newtable(objs[i]);
-	luaL_setfuncs(objs[i], SuperXSprite, 0);
-	lua_setglobal(objs[i], "Sprite");
-
-	lua_newtable(objs[i]);
-	luaL_setfuncs(objs[i], SuperXAudio, 0);
-	lua_setglobal(objs[i], "Audio");
-
-	lua_newtable(objs[i]);
-	lua_pushnumber(objs[i],  (int) NOFLIP);
-	lua_setfield(objs[i], -2, "NOFLIP");
-	lua_pushnumber(objs[i], (int) XFLIP);
-	lua_setfield(objs[i], -2, "XFLIP");
-	lua_pushnumber(objs[i], (int) YFLIP);
-	lua_setfield(objs[i], -2, "YFLIP");
-	lua_pushnumber(objs[i], (int) XYFLIP);
-	lua_setfield(objs[i], -2, "XYFLIP");
-	lua_pushnumber(objs[i], bufferSizeX);
-	lua_setfield(objs[i], -2, "SCREENWIDTH");
-	lua_pushnumber(objs[i], bufferSizeY);
-	lua_setfield(objs[i], -2, "SCREENHEIGHT");
-	luaL_setfuncs(objs[i], SuperXRender, 0);
-	lua_setglobal(objs[i], "Render");
-
 	// the script may not necessarily have an init function so 
 	// we don't throw an error for this
-	lua_getglobal(objs[i], "init");
-	if (lua_pcall(objs[i], 0, 0, 0)) {
-		lua_getglobal(objs[i], "init");
-		if (lua_isfunction(objs[i], -1)) {
+	lua_getglobal(objs[sLayer][i], "init");
+	if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
+		lua_getglobal(objs[sLayer][i], "init");
+		if (lua_isfunction(objs[sLayer][i], -1)) {
 			engineState = SUPERX_SCRIPTERROR;
-			DisplayScriptError(i);
+			DisplayScriptError(i, sLayer);
 		}
 	}
 
-	objectCount++;
 	return 0;
 }
 
-void FreeObject(int objID) {
-	lua_close(objs[objID]);
-	objs[objID] = NULL;
+void FreeObject(int objID, int sLayer) {
+	lua_close(objs[sLayer][objID]);
+	objs[sLayer][objID] = NULL;
 }
 
 void FreeAllObjects() {
-	for (int i = 0; i < MAX_OBJECTS; i++) {
-		if (objs[i] != NULL) {
-			lua_close(objs[i]);
-			objs[i] = NULL;
+	for (int j = 0; j < SPRITE_LAYER_COUNT; j++) {
+		for (int i = 0; i < MAX_OBJECTS; i++) {
+			if (objs[j][i] != NULL) {
+				lua_close(objs[j][i]);
+				objs[j][i] = NULL;
+			}
 		}
 	}
 }
 
-void UpdateObjects() {
+void UpdateObjects(int sLayer) {
 	for (int i = 0; i < MAX_OBJECTS; i++) {
-		if (objs[i] == NULL)
+		if (objs[sLayer][i] == NULL)
 			continue;
 
-		lua_getglobal(objs[i], "update");
-		if (lua_pcall(objs[i], 0, 0, 0)) {
-			lua_getglobal(objs[i], "update");
-			if (!lua_isfunction(objs[i], -1))
+		lua_getglobal(objs[sLayer][i], "update");
+		if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
+			lua_getglobal(objs[sLayer][i], "update");
+			if (!lua_isfunction(objs[sLayer][i], -1))
 				continue;
 
 			engineState = SUPERX_SCRIPTERROR;
-			DisplayScriptError(i);
+			DisplayScriptError(i, sLayer);
 		}
 	}
 }
-
 

@@ -208,7 +208,7 @@ void DrawText(int x, int y, u16 color, int width, const char* text, ...) {
 
 		s++;
 		w += 8;
-		px += FONTCHR_WIDTH + 1;
+		px += FONTCHR_WIDTH;
 
 		if (w >= width && width != -1) {
 			w = 0;

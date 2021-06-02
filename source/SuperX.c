@@ -138,7 +138,7 @@ int InitSuperX() {
 	frameRate   = 60;
 
 	// TODO: load a full scene instead of just an object
-	InitObject("debug.lua");
+	InitObject("debug.lua", 0);
 
 	return 0;
 }
@@ -164,7 +164,7 @@ void RunSuperX() {
 
 		switch (engineState) {
 			case SUPERX_MAINGAME:
-				UpdateObjects();
+				UpdateObjects(0);
 				break;
 			case SUPERX_DEVMENU:
 				RunDevMenu();

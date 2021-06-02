@@ -42,13 +42,12 @@ void RunDevMenu() {
 
 }
 
-void DisplayScriptError(int objIndex) {
+void DisplayScriptError(int objIndex, int spriteLayer) {
 	PauseMusic();
 	int devXPos = bufferSizeX / 2 - (width / 2);
 	int devYPos = bufferSizeY / 2 - (height / 2);
 
-	lua_State* L = objs[objIndex];
-	objs[objIndex] = NULL;
+	lua_State* L = objs[spriteLayer][objIndex];
 
 	if (renderType == SUPERX_SW_RENDER) {
 		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
@@ -61,7 +60,7 @@ void DisplayScriptError(int objIndex) {
 	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 16, "%s %s", errMsg1, errMsg2);
 	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 16, "Object will be disabled.");
 
-	lua_close(L);
+	FreeObject(objIndex, spriteLayer);
 
 	PrintLog("ERROR: %s%s\n", errMsg1, errMsg2);
 }
