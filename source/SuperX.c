@@ -60,6 +60,18 @@ void ProcessEventsSDL() {
 				break;
 			case SDL_KEYDOWN:
 				switch(ev.key.keysym.sym) {
+					case SDLK_UP:
+						if (engineState == SUPERX_DEVMENU)
+							DevMenuInput(DEVINPUT_UP);
+						break;
+					case SDLK_DOWN:
+						if (engineState == SUPERX_DEVMENU)
+							DevMenuInput(DEVINPUT_DOWN);
+						break;
+					case SDLK_RETURN:
+						if (engineState == SUPERX_DEVMENU)
+							DevMenuInput(DEVINPUT_SELECT);
+						break;
 					case SDLK_ESCAPE:
 						if (engineState == SUPERX_DEVMENU ||
 						    engineState == SUPERX_SCRIPTERROR) {
