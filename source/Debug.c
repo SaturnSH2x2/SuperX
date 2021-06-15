@@ -52,6 +52,8 @@ void InitDevMenu() {
 
 	DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "WELCOME TO SUPERX DEVELOPER MENU");
 	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 8, "SuperX, commit: %s", COMMIT);
+	DrawText(devXPos + 8, devYPos + 26, 0xffff, width - 8, gameName);
+	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 8, gameVersion);
 }
 
 void DevMenuInput(DevInput stat) {
@@ -96,10 +98,10 @@ void RunDevMenu() {
 		case DEV_MAIN_MENU:
 			for (int i = 0; i < 4; i++) {
 				if (i == devMenuSelect)
-					DrawText(devXPos + 8, devYPos + 41 + (i * 9), 0xffff, width - 16,
+					DrawText(devXPos + 8, devYPos + 53 + (i * 9), 0xffff, width - 16,
 						devMenuOpts[i]);
 				else
-					DrawText(devXPos + 8, devYPos + 41 + (i * 9), RGBA8_to_RGB565(0xf6878dff),
+					DrawText(devXPos + 8, devYPos + 53 + (i * 9), RGBA8_to_RGB565(0xf6878dff),
 						width - 16, devMenuOpts[i]);			
 			}
 			break;

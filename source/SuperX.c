@@ -117,6 +117,14 @@ void CloseSDL() {
 int InitSuperX() {
 	memset(basePath, 0, sizeof(basePath));
 
+	// TODO: currently hard-coded, do something about this
+	useDataFolder = 1;
+
+	if (LoadGameConfig()) {
+		PrintLog("ERROR: while loading GameConfig.json\n");
+		return 1;
+	}
+
 	if (LoadUserConfig()) {
 		PrintLog("ERROR: while loading config.json\n");
 		return 1;
