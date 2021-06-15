@@ -117,7 +117,7 @@ void CloseSDL() {
 int InitSuperX() {
 	memset(basePath, 0, sizeof(basePath));
 
-	if (LoadGameConfig()) {
+	if (LoadUserConfig()) {
 		PrintLog("ERROR: while loading config.json\n");
 		return 1;
 	}

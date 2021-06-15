@@ -1,7 +1,7 @@
 #include "SuperX.h"
 
 // TODO: account for base path
-int LoadGameConfig() {
+int LoadUserConfig() {
 	json_t* root;
 	json_error_t error;
 

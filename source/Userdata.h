@@ -24,6 +24,6 @@ inline void AssignValueBool(json_t* js, const char* key, char* val) {
 	json_decref(temp);
 }
 
-int LoadGameConfig();
+int LoadUserConfig();
 
 #endif
