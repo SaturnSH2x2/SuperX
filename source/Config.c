@@ -7,6 +7,7 @@ char gameName[256];
 char gameVersion[16];
 
 SceneCategory* sceneTree;
+int categoryCount;
 
 // TODO: account for base path
 int LoadUserConfig() {
@@ -62,6 +63,12 @@ int LoadGameConfig() {
 	json_t* root;
 	json_error_t error;
 
+	json_t* sTreeJS;
+
+	// used for iteration
+	const char* key;
+	json_t* val;
+
 	if (useDataFolder) {
 		root = json_load_file("./Data/GameConfig.json", 0, &error);
 	}
@@ -74,6 +81,58 @@ int LoadGameConfig() {
 	AssignValueStr(root, "game-name", gameName, 255);
 	AssignValueStr(root, "game-version", gameVersion, 15);
 
+	sTreeJS = json_object_get(root, "scene-tree");
+	if (!json_is_object(sTreeJS)) {
+		PrintLog("ERROR: parsing GameConfig.json, cannot read scene tree\n");
+		return 1;
+	}
+
+	categoryCount = json_object_size(sTreeJS);
+	sceneTree = (SceneCategory*) malloc(categoryCount * sizeof(SceneCategory));
+
+	void* iter = json_object_iter(sTreeJS);
+	int index = 0;
+	while (iter) {
+		key = json_object_iter_key(iter);
+		val = json_object_iter_value(iter);
+
+		if (!json_is_array(val)) {
+			PrintLog("NOTE: %s is not a valid scene category, ignoring.\n", key);
+			iter = json_object_iter_next(sTreeJS, iter);
+			index++;
+			continue;
+		}
+
+		sceneTree[index].sceneCount = json_array_size(val);
+		strncpy(sceneTree[index].categoryName, key, 15);
+		sceneTree[index].scenes = (Scene*) malloc(sceneTree[index].sceneCount * sizeof(Scene));
+
+		for (int i = 0; i < sceneTree[index].sceneCount; i++) {
+			json_t* temp = json_array_get(val, i);
+			if (!json_is_object(temp)) {
+				PrintLog("NOTE: could not parse scene at index %d in %s; ignoring\n", i, key);
+				continue;
+			}
+
+			AssignValueStr(temp, "name", sceneTree[index].scenes[i].sceneName, 15);
+			AssignValueStr(temp, "path", sceneTree[index].scenes[i].scenePath, 255);
+
+			json_decref(temp);
+		}
+
+		iter = json_object_iter_next(sTreeJS, iter);
+		index++;
+	}
+
+	json_decref(sTreeJS);
 	json_decref(root);
 	return 0;
+}
+
+void CloseGameConfig() {
+	for (int i = 0; i < categoryCount; i++) {
+		free(sceneTree[i].scenes);
+	}
+
+	free(sceneTree);
 }

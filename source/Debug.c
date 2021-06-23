@@ -13,7 +13,12 @@ const char* devMenuOpts[4] = {
 static const int width = 320;
 static const int height = 175;
 
+static const u16 colUnselect = RGBA8_to_RGB565(0xf6878dff);
+
 int devXPos, devYPos;
+int entryOffset;
+
+SceneCategory* selectedCategory;
 
 // heavily based on RSDKv3 decomp's logging function
 void PrintLog(const char* str, ...) {
@@ -43,17 +48,9 @@ void InitDevMenu() {
 
 	devXPos = bufferSizeX / 2 - (width / 2);
 	devYPos = bufferSizeY / 2 - (height / 2);
-
-	if (renderType == SUPERX_SW_RENDER) {
-		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
-	}
-
+	
 	devMenuSelect = 0;
-
-	DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "WELCOME TO SUPERX DEVELOPER MENU");
-	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 8, "SuperX, commit: %s", COMMIT);
-	DrawText(devXPos + 8, devYPos + 26, 0xffff, width - 8, gameName);
-	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 8, gameVersion);
+	entryOffset = 0;
 }
 
 void DevMenuInput(DevInput stat) {
@@ -72,37 +69,135 @@ void DevMenuInput(DevInput stat) {
 			break;
 	};
 
-	if (select) {
-		switch (devMenuSelect) {
-			case 0:
-				ResumeMusic();
-				engineState = SUPERX_MAINGAME;
-				break;
-			// TODO: cases 1 and 2 (restarting and selecting scenes)
-			case 3:
-				engineState = SUPERX_EXIT;
-				break;
-		};
-	}
+	switch(dState) {
+		case DEV_MAIN_MENU:
+			if (devMenuSelect >= 4)
+				devMenuSelect = 0;
+			if (devMenuSelect < 0)
+				devMenuSelect = 3;
 
-	if (dState == DEV_MAIN_MENU) {
-		if (devMenuSelect >= 4)
-			devMenuSelect = 0;
-		if (devMenuSelect < 0)
-			devMenuSelect = 3;
-	}
+			if (select) {
+				switch (devMenuSelect) {
+					case 0:
+						ResumeMusic();
+						engineState = SUPERX_MAINGAME;
+						break;
+					// TODO: cases 1 and 2 (restarting and selecting scenes)
+					case 2:
+						dState = DEV_CATEGORY_SELECT;
+						devMenuSelect = 0;
+						break;
+					case 3:
+						engineState = SUPERX_EXIT;
+						break;
+				};
+			}
+			break;
+		case DEV_CATEGORY_SELECT:
+			if (devMenuSelect >= categoryCount) {
+				devMenuSelect = 0;
+				entryOffset = 0;
+			}
+
+			if (devMenuSelect < 0) {
+				devMenuSelect = categoryCount - 1;
+			}
+
+			if (devMenuSelect >= DEVMENU_MAX_ENTRIES) {
+				entryOffset++;
+			}
+
+			if (devMenuSelect < entryOffset) {
+				entryOffset--;
+			}
+
+			if (select) {
+				// stuff
+				selectedCategory = &sceneTree[devMenuSelect];
+				dState = DEV_SCENE_SELECT;
+				devMenuSelect = 0;
+				break;
+			}
+
+			break;
+		case DEV_SCENE_SELECT:
+			if (devMenuSelect >= selectedCategory->sceneCount) {
+				devMenuSelect = 0;
+				entryOffset = 0;
+			}
+
+			if (devMenuSelect < 0) {
+				devMenuSelect = selectedCategory->sceneCount - 1;
+			}
+
+			if (devMenuSelect >= DEVMENU_MAX_ENTRIES) {
+				entryOffset++;
+			}
+
+			if (devMenuSelect < entryOffset) {
+				entryOffset--;
+			}
+
+			if (select) {
+				// TODO: scene loading isn't yet implemented; implement this once you have
+				// that up and running
+			}
+
+			break;
+		default:
+			break;
+	};
 }
 
 void RunDevMenu() {
+	if (renderType == SUPERX_SW_RENDER) {
+		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
+	}
+
 	switch (dState) {
 		case DEV_MAIN_MENU:
+			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "WELCOME TO SUPERX DEVELOPER MENU");
+			DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 8, "SuperX, commit: %s", COMMIT);
+			DrawText(devXPos + 8, devYPos + 26, 0xffff, width - 8, gameName);
+			DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 8, gameVersion);
+
 			for (int i = 0; i < 4; i++) {
 				if (i == devMenuSelect)
 					DrawText(devXPos + 8, devYPos + 53 + (i * 9), 0xffff, width - 16,
 						devMenuOpts[i]);
 				else
-					DrawText(devXPos + 8, devYPos + 53 + (i * 9), RGBA8_to_RGB565(0xf6878dff),
+					DrawText(devXPos + 8, devYPos + 53 + (i * 9), colUnselect,
 						width - 16, devMenuOpts[i]);			
+			}
+			break;
+		case DEV_CATEGORY_SELECT:
+			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "SELECT SCENE CATEGORY");
+
+			for (int i = 0; i < DEVMENU_MAX_ENTRIES; i++) {
+				if (i + entryOffset >= categoryCount)
+					break;
+
+				if (i + entryOffset == devMenuSelect)
+					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffff, width - 16,
+							sceneTree[i + entryOffset].categoryName);
+				else
+					DrawText(devXPos + 8, devYPos + 26 + (i* 9), 
+							colUnselect, width - 16, sceneTree[i + entryOffset].categoryName);
+			}
+			break;
+		case DEV_SCENE_SELECT:
+			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "SELECT A SCENE");
+
+			for (int i = 0; i < DEVMENU_MAX_ENTRIES; i++) {
+				if (i + entryOffset >= selectedCategory->sceneCount)
+					break;
+
+				if (i + entryOffset == devMenuSelect)
+					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffff, width - 16,
+							selectedCategory->scenes[i + entryOffset].sceneName);
+				else
+					DrawText(devXPos + 8, devYPos + 26 + (i * 9), colUnselect, width - 16,
+							selectedCategory->scenes[i + entryOffset].sceneName);
 			}
 			break;
 		default:

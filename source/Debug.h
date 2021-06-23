@@ -1,6 +1,8 @@
 #ifndef DEBUG_HPP
 #define DEBUG_HPP
 
+#define DEVMENU_MAX_ENTRIES (16)
+
 typedef enum {
 	DEV_MAIN_MENU,
 	DEV_CATEGORY_SELECT,

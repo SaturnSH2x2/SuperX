@@ -165,6 +165,7 @@ int InitSuperX() {
 
 void CloseSuperX() {
 	ReleaseFrameBuffer();
+	CloseGameConfig();
 	CloseAudio();
 	CloseSDL();
 }

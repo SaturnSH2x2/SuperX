@@ -7,17 +7,23 @@
 #define DEFAULT_SCREENSIZEY   900
 
 #define MAX_PATHSIZE 255
+typedef struct {
+	char sceneName[16];
+	char scenePath[256];
+} Scene;
+
+typedef struct {
+	int sceneCount;
+	char categoryName[16];
+	Scene* scenes;
+} SceneCategory;
 
 extern char useDataFolder;
 
 extern char gameName[256];
 extern char gameVersion[16];
-extern char** sceneTree;
-
-typedef struct {
-	char treeName[16];
-	char** sceneList;
-} SceneCategory;
+extern SceneCategory* sceneTree;
+extern int categoryCount;
 
 inline void AssignValueInt(json_t* js, const char* key, int* val) {
 	json_t* temp = json_object_get(js, key);
@@ -49,5 +55,6 @@ inline void AssignValueStr(json_t* js, const char* key, char* val, int size) {
 
 int LoadUserConfig();
 int LoadGameConfig();
+void CloseGameConfig();
 
 #endif

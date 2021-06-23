@@ -8,7 +8,7 @@ CC       := gcc
 CXX      := g++
 CFLAGS   := -g -Wall -O2 -DCOMMIT=\"$(COMMIT)\"
 INCLUDES := -I/usr/include/lua5.2 -I./lodepng -I/usr/local/include
-LIBS_ALL := -llua5.2 -ljansson -ltmxparser -lSDL2_mixer -lSDL2
+LIBS_ALL := -llua5.2 -ljansson -lSDL2_mixer -lSDL2
 
 objects/%.o: %
 	mkdir -p $(@D)
