@@ -74,6 +74,7 @@ extern "C" {
 #include "File.h"
 #include "Debug.h"
 #include "Render.h"
+#include "Palette.h"
 #include "Sprite.h"
 #include "Script.h"
 #include "Config.h"
