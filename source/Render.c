@@ -46,7 +46,100 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 	}
 
 	if (spriteSheetTable[sheetID].hasPalette) {
-		// TODO: implement paletted graphics first
+		u8* srcPtr = (u8*) (spriteSheetTable[sheetID].pixelData) + spriteSheetTable[sheetID].width * sy + sx;
+		u16* dstPtr = (u16*) (frameBuffer) + bufferSizeX * y + x;
+
+		int i = spriteSheetTable[sheetID].paletteIndex;
+
+		switch (flag) {
+			case XFLIP:
+				srcPtr += width;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != transparentColor[i] && 
+								x + dx < bufferSizeX && x + dx >= 0 &&
+								y + dy < bufferSizeY && y + dy >= 0)
+							*dstPtr = colorPalette[(i * 256) + *srcPtr];
+
+						srcPtr--;
+						dstPtr++;
+					}
+
+					if (dy >= bufferSizeY)
+						break;
+
+					srcPtr += spriteSheetTable[sheetID].width + width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			case YFLIP:
+				srcPtr += spriteSheetTable[sheetID].width * height;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != transparentColor[i] && 
+								x + dx < bufferSizeX && x + dx >= 0 &&
+								y + dy < bufferSizeY && y + dy >= 0)
+							*dstPtr = colorPalette[(i * 256) + *srcPtr];
+
+						srcPtr++;
+						dstPtr++;
+					}
+
+					if (dy >= bufferSizeY)
+						break;
+
+					srcPtr -= spriteSheetTable[sheetID].width + width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			case XYFLIP:
+				srcPtr += spriteSheetTable[sheetID].width * height + width;
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != transparentColor[i] && 
+								x + dx < bufferSizeX && x + dx >= 0 &&
+								y + dy < bufferSizeY && y + dy >= 0)
+	
+							*dstPtr = colorPalette[(i * 256) + *srcPtr];
+
+						srcPtr--;
+						dstPtr++;
+					}
+
+					if (dy >= bufferSizeY)
+						break;
+
+					srcPtr -= spriteSheetTable[sheetID].width - width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+			default:
+				for (int dy = 0; dy < height; dy++) {
+					for (int dx = 0; dx < width; dx++) {
+						if (*srcPtr != transparentColor[i] && 
+								x + dx < bufferSizeX && x + dx >= 0 &&
+								y + dy < bufferSizeY && y + dy >= 0)
+	
+
+							*dstPtr = colorPalette[(i * 256) + *srcPtr];
+
+						srcPtr++;
+						dstPtr++;
+					}
+
+					if (dy >= bufferSizeY)
+						break;
+
+					srcPtr += spriteSheetTable[sheetID].width - width;
+					dstPtr += bufferSizeX - width;
+				}
+
+				break;
+		}
+
 	} else {
 		u16* srcPtr = (u16*) (spriteSheetTable[sheetID].pixelData) + spriteSheetTable[sheetID].width * sy + sx;
 		u16* dstPtr = (u16*) (frameBuffer) + bufferSizeX * y + x;
@@ -135,7 +228,6 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 	}
 }
 
-// TODO: implementation slightly borked, fix bleed-over
 void DrawRectangleSW(int x, int y, int w, int h, u16 color) {
 	u16* ptr = (u16*) (frameBuffer) + y * bufferSizeX + x;
 	for (int dy = 0; dy < h; dy++) {

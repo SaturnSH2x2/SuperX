@@ -59,3 +59,78 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 
 	return 0;
 }
+
+int LoadSpriteSheetFromGIF(const char* fileName, u8* sheetIndex, int paletteSlot, u8 loadPalette) {
+	gd_GIF* gif = gd_open_gif(fileName);
+
+	PrintLog("NOTE: Loading %s, w: %d, h: %d, palette size: %d\n", fileName, gif->width, gif->height, gif->palette->size);
+
+	if (loadPalette) {
+		PrintLog("NOTE: loading color palette from file into palette slot %d\n", paletteSlot);
+
+		if (paletteSlot < 0 || paletteSlot >= 4) {
+			PrintLog("ERROR: invalid palette slot %d passed\n", paletteSlot);
+			gd_close_gif(gif);
+			return 1;
+		}
+
+		if (gif->palette->size != 256) {
+			PrintLog("ERROR: palette must be of size 256 to be copied, size: %d\n", gif->palette->size);
+			gd_close_gif(gif);
+			return 1;
+		}
+
+		u8* ptr = gif->palette->colors;
+		u8 r, g, b;
+		u32 builtColor;
+
+		// gifdec seems to store color in RGB888, convert accordingly
+		for (int i = 0; i < 256; i++) {
+			r = *ptr;
+			ptr++;
+			g = *ptr;
+			ptr++;
+			b = *ptr;
+			ptr++;
+
+			builtColor = 0xff << 24 | b << 16 | g << 8 | r;
+			colorPalette[(paletteSlot * 256) + i] = RGBA8_to_RGB565(builtColor);
+		}
+	}
+
+	// we only need the first frame, so get that and render
+	gd_get_frame(gif);
+
+	// load indexed pixel data into memory
+	if (usedSpriteSheets >= MAX_SPRITESHEET_COUNT) {
+		PrintLog("ERROR (LoadSpriteFromGIF): exceeded max number of spritesheets\n");
+		return 1;
+	}
+
+	spriteSheetTable[usedSpriteSheets].pixelData = malloc(gif->width * gif->height * sizeof(u8));
+	if (!spriteSheetTable[usedSpriteSheets].pixelData) {
+		PrintLog("ERROR (LoadSpriteFromGIF): could not allocate memory for spritesheet\n");
+		return 1;
+	}
+
+	*sheetIndex = usedSpriteSheets;
+	usedSpriteSheets++;
+
+	spriteSheetTable[*sheetIndex].width = gif->width;
+	spriteSheetTable[*sheetIndex].height = gif->height;
+	spriteSheetTable[*sheetIndex].hasPalette = 1;
+	spriteSheetTable[*sheetIndex].paletteIndex = paletteSlot;
+
+	u8* dest = (u8*) spriteSheetTable[*sheetIndex].pixelData;
+	u8* src =  (u8*) gif->frame;
+	for (int i = 0; i < gif->width * gif->height; i++) {
+		*dest = *src;
+		dest++;
+		src++;
+	}
+
+	PrintLog("NOTE: loaded %s into index %d\n", fileName, *sheetIndex);
+
+	gd_close_gif(gif);	
+	return 0;
+}

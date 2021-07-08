@@ -10,6 +10,7 @@ typedef struct {
 	int height;
 	void* pixelData;
 	char hasPalette;
+	int paletteIndex;
 } SpriteSheet;
 
 // --- variables (SW render) ---
@@ -19,6 +20,7 @@ extern u8 usedSpriteSheets;
 // --- functions (SW render) ---
 void ClearAllSpriteSheets();
 int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex);
+int LoadSpriteSheetFromGIF(const char* fileName, u8* sheetIndex, int paletteSlot, u8 loadPalette);
 
 // --- inline functions ---
 // modified from https://afterthoughtsoftware.com/posts/convert-rgb888-to-rgb565

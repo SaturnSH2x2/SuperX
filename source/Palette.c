@@ -3,7 +3,7 @@
 u16 colorPalette[256 * 4];
 u16** paletteRef;
 
-char transparentColor[4];
+int transparentColor[4] = { -1 };
 
 int paletteCycleIndex[MAX_PALETTE_CYCLES];
 
@@ -17,8 +17,9 @@ int SetPaletteEntry(u32 color, int palette, char index) {
 	return 0;
 }
 
-void SetTransparentColor(u32 color, int palette) {
-	transparentColor[palette] = color;
+void SetTransparentColor(char index, int palette) {
+	PrintLog("NOTE: transparent color for palette %d set to index %d\n", palette, index);
+	transparentColor[palette] = index;
 }
 
 // TODO: implement these for the software render backend

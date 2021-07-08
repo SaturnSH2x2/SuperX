@@ -10,12 +10,12 @@
 extern u16 colorPalette[256 * 4];
 extern u16** paletteRef;
 
-extern char transparentColor[4];
+extern int transparentColor[4];
 
 extern int paletteCycleIndex[MAX_PALETTE_CYCLES];
 
 int SetPaletteEntry(u32 color, int palette, char index);
-void SetTransparentColor(u32 color, int palette);
+void SetTransparentColor(char index, int palette);
 
 int RegisterPaletteCycle(char startIndex, char endIndex, int* cycleIndex);
 void PausePaletteCycle(int cycleIndex);

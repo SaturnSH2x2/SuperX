@@ -24,6 +24,21 @@ static int l_loadSSFromPNG(lua_State* L) {
 	return 1;
 }
 
+static int l_loadSSFromGIF(lua_State* L) {
+	const char* fPath = luaL_checkstring(L, 1);
+	int paletteSlot   = luaL_checkinteger(L, 2);
+	int loadPalette   = luaL_checkinteger(L, 3);
+
+	u8 sheetIndex = 0;
+	if (LoadSpriteSheetFromGIF(fPath, &sheetIndex, paletteSlot, loadPalette) != 0) {
+		lua_pushnumber(L, -1);
+	} else {
+		lua_pushnumber(L, (int) sheetIndex);
+	}
+
+	return 1;
+}
+
 // input
 static int l_getButtonDown(lua_State* L) {
 	int port   = luaL_checkinteger(L, 1);
@@ -171,6 +186,20 @@ static int l_buildColor(lua_State* L) {
 	return 1;
 }
 
+// palette
+static int l_setTransparentColor(lua_State* L) {
+	int palIndex = luaL_checkinteger(L, 1);
+	char colIndex = luaL_checkinteger(L, 2);
+
+	if (palIndex < 0 || palIndex >= 4) {
+		lua_pushstring(L, "palette index should be 0-3");
+		lua_error(L);
+	}
+
+	SetTransparentColor(colIndex, palIndex);
+	return 0;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -181,6 +210,7 @@ static const struct luaL_reg SuperXDebug [] = {
 
 static const struct luaL_reg SuperXSprite [] = {
 	{ "LoadFromPNG"           , l_loadSSFromPNG },
+	{ "LoadFromGIF"		  , l_loadSSFromGIF },
 	{ NULL	                  , NULL            }
 };
 
@@ -208,6 +238,11 @@ static const struct luaL_reg SuperXRender [] = {
 	{ "DrawText",		l_drawText },
 	{ "BuildColor",		l_buildColor },
 	{ NULL,			NULL }
+};
+
+static const struct luaL_reg SuperXPalette [] = {
+	{ "SetTransparentColor",	l_setTransparentColor },
+	{ NULL,				NULL	  	      }
 };
 
 void SetupAPI(lua_State* L) {
@@ -266,6 +301,10 @@ void SetupAPI(lua_State* L) {
 	lua_setfield(L, -2, "SCREENHEIGHT");
 	luaL_setfuncs(L, SuperXRender, 0);
 	lua_setglobal(L, "Render");
+
+	lua_newtable(L);
+	luaL_setfuncs(L, SuperXPalette, 0);
+	lua_setglobal(L, "Palette");
 }
 
 // --- end Lua library definitions ---
