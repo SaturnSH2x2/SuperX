@@ -12,4 +12,15 @@ void FreeObject(int objID, int sLayer);
 void FreeAllObjects();
 void UpdateObjects(int sLayer);
 
+// i'm sure there's totally a great reason as to why this function
+// doesn't exist in the base library
+inline int luaL_checkboolean(lua_State* L, int pos) {
+	if (lua_isboolean(L, pos))
+		return (int) lua_toboolean(L, pos);
+	else {
+		lua_pushstring(L, "argument should be boolean");
+		lua_error(L);
+	}
+}
+
 #endif

@@ -27,7 +27,7 @@ static int l_loadSSFromPNG(lua_State* L) {
 static int l_loadSSFromGIF(lua_State* L) {
 	const char* fPath = luaL_checkstring(L, 1);
 	int paletteSlot   = luaL_checkinteger(L, 2);
-	int loadPalette   = luaL_checkinteger(L, 3);
+	int loadPalette   = (int) luaL_checkboolean(L, 3);
 
 	u8 sheetIndex = 0;
 	if (LoadSpriteSheetFromGIF(fPath, &sheetIndex, paletteSlot, loadPalette) != 0) {
