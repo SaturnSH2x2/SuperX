@@ -187,6 +187,15 @@ static int l_buildColor(lua_State* L) {
 }
 
 // palette
+static int l_setPaletteEntry(lua_State* L) {
+	int palette = luaL_checkinteger(L, 1);
+	int index   = luaL_checkinteger(L, 2);
+	u16 color   = (u16) luaL_checkinteger(L, 3);
+
+	SetPaletteEntry(color, palette, index);
+	return 0;
+}
+
 static int l_setTransparentColor(lua_State* L) {
 	int palIndex = luaL_checkinteger(L, 1);
 	char colIndex = luaL_checkinteger(L, 2);
@@ -241,6 +250,7 @@ static const struct luaL_reg SuperXRender [] = {
 };
 
 static const struct luaL_reg SuperXPalette [] = {
+	{ "SetPaletteEntry",		l_setPaletteEntry     },
 	{ "SetTransparentColor",	l_setTransparentColor },
 	{ NULL,				NULL	  	      }
 };

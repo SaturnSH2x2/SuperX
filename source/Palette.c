@@ -7,7 +7,7 @@ int transparentColor[4] = { -1 };
 
 int paletteCycleIndex[MAX_PALETTE_CYCLES];
 
-int SetPaletteEntry(u32 color, int palette, char index) {
+int SetPaletteEntry(u16 color, int palette, char index) {
 	if (index >= 256 || index < 0) {
 		PrintLog("ERROR: attempt to set color for palette %d at %d\n", palette, index);
 		return 1;

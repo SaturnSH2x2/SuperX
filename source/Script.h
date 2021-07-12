@@ -20,6 +20,7 @@ inline int luaL_checkboolean(lua_State* L, int pos) {
 	else {
 		lua_pushstring(L, "argument should be boolean");
 		lua_error(L);
+		return 0;
 	}
 }
 

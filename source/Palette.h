@@ -14,7 +14,7 @@ extern int transparentColor[4];
 
 extern int paletteCycleIndex[MAX_PALETTE_CYCLES];
 
-int SetPaletteEntry(u32 color, int palette, char index);
+int SetPaletteEntry(u16 color, int palette, char index);
 void SetTransparentColor(char index, int palette);
 
 int RegisterPaletteCycle(char startIndex, char endIndex, int* cycleIndex);

@@ -81,6 +81,7 @@ extern "C" {
 #include "Config.h"
 #include "Input.h"
 #include "Audio.h"
+#include "Scene.h"
 
 // --- engine variables ---
 typedef enum {
