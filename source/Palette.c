@@ -1,19 +1,23 @@
 #include "SuperX.h"
 
 u16 colorPalette[256 * 4];
+u32 colorPalette32[256 * 4];
+
 u16** paletteRef;
+u32** paletteRef32;
 
 int transparentColor[4] = { -1 };
 
 int paletteCycleIndex[MAX_PALETTE_CYCLES];
 
-int SetPaletteEntry(u16 color, int palette, char index) {
+int SetPaletteEntry(u32 color, int palette, char index) {
 	if (index >= 256 || index < 0) {
 		PrintLog("ERROR: attempt to set color for palette %d at %d\n", palette, index);
 		return 1;
 	}
 
-	colorPalette[palette * 256 + index] = color;
+	colorPalette32[palette * 256 + index] = color;
+	colorPalette[palette * 256 + index] = RGBA8_to_RGB565(color);
 	return 0;
 }
 

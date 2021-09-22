@@ -122,11 +122,8 @@ static int l_playSoundEffect(lua_State* L) {
 
 // render
 static int l_clearFrameBuffer(lua_State* L) {
-	u16 color = (u16) luaL_checkinteger(L, 1);
-	if (renderType == SUPERX_SW_RENDER)
-		ClearFrameBuffer(color);
-	else
-		PrintLog("NOTE: unimplemented draw call (ClearFrameBuffer)\n");
+	int color = luaL_checkinteger(L, 1);
+	ClearScreen(color);
 
 	return 0;
 }
@@ -141,10 +138,7 @@ static int l_drawSprite(lua_State* L) {
 	int h   = luaL_checkinteger(L, 7);
 	SpriteFlipFlag f = (SpriteFlipFlag) luaL_checkinteger(L, 8);
 
-	if (renderType == SUPERX_SW_RENDER)
-		DrawSpriteSW(sid, x, y, sx, sy, w, h, f);
-	else
-		PrintLog("NOTE: unimplemented draw call (DrawSprite)\n");
+	DrawSprite(sid, x, y, sx, sy, w, h, f);
 
 	return 0;
 }
@@ -154,12 +148,9 @@ static int l_drawRect(lua_State* L) {
 	int y = luaL_checkinteger(L, 2);
 	int w = luaL_checkinteger(L, 3);
 	int h = luaL_checkinteger(L, 4);
-	u16 col = (u16) luaL_checkinteger(L, 5);
+	u32 col = (u32) luaL_checkinteger(L, 5);
 
-	if (renderType == SUPERX_SW_RENDER)
-		DrawRectangleSW(x, y, w, h, col);
-	else
-		PrintLog("NOTE: unimplemented draw call (DrawRectangle)\n");
+	DrawRectangle(x, y, w, h, col);
 
 	return 0;
 }
@@ -168,7 +159,7 @@ static int l_drawText(lua_State* L) {
 	const char* s = luaL_checkstring(L, 1);
 	int x         = luaL_checkinteger(L, 2);
 	int y         = luaL_checkinteger(L, 3);
-	u16 color     = (u16) luaL_checkinteger(L, 4);
+	u32 color     = (u32) luaL_checkinteger(L, 4);
 
 	DrawText(x, y, color, -1, s);
 	return 0;
@@ -181,7 +172,7 @@ static int l_buildColor(lua_State* L) {
 	u32 a = (u32) 0xff << 24;
 
 	u32 builtColor = a | b | g | r;
-	lua_pushnumber(L, (u32) RGBA8_to_RGB565(builtColor));
+	lua_pushnumber(L, builtColor);
 
 	return 1;
 }
@@ -190,7 +181,7 @@ static int l_buildColor(lua_State* L) {
 static int l_setPaletteEntry(lua_State* L) {
 	int palette = luaL_checkinteger(L, 1);
 	int index   = luaL_checkinteger(L, 2);
-	u16 color   = (u16) luaL_checkinteger(L, 3);
+	u32 color   = (u32) luaL_checkinteger(L, 3);
 
 	SetPaletteEntry(color, palette, index);
 	return 0;
@@ -305,9 +296,9 @@ void SetupAPI(lua_State* L) {
 	lua_setfield(L, -2, "YFLIP");
 	lua_pushnumber(L, (int) XYFLIP);
 	lua_setfield(L, -2, "XYFLIP");
-	lua_pushnumber(L, bufferSizeX);
+	lua_pushnumber(L, screenWidth);
 	lua_setfield(L, -2, "SCREENWIDTH");
-	lua_pushnumber(L, bufferSizeY);
+	lua_pushnumber(L, screenHeight);
 	lua_setfield(L, -2, "SCREENHEIGHT");
 	luaL_setfuncs(L, SuperXRender, 0);
 	lua_setglobal(L, "Render");

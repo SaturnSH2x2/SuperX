@@ -26,18 +26,18 @@
 #define COMMIT "unknown"
 #endif
 
-#if defined _3DS
+#if defined __3DS__
 #define SUPERX_PLATFORM SUPERX_3DS
-#define SUPERX_USING_SDL2 (0)
-#define SUPERX_USING_SDL1 (0)
+#define SUPERX_USING_SDL2     (0)
+#define SUPERX_USING_SDLMIXER (1)
 #elif defined _DC
 #define SUPERX_PLATFORM SUPERX_DC
-#define SUPERX_USING_SDL2 (1)
-#define SUPERX_USING_SDL1 (0)
+#define SUPERX_USING_SDL2     (0)
+#define SUPERX_USING_SDLMIXER (1)
 #else
 #define SUPERX_PLATFORM SUPERX_PC
-#define SUPERX_USING_SDL2 (1)
-#define SUPERX_USING_SDL1 (0)
+#define SUPERX_USING_SDL2     (1)
+#define SUPERX_USING_SDLMIXER (1)
 #endif
 
 // --- include statements ---
@@ -64,8 +64,6 @@ extern "C" {
 		2. Add keyboard input support (some people don't have controllers)
 		3. Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
-		4. Implement color palettes, as well as automatic detection of color
-		   palettes (so that indexed images aren't strictly necessary)
 
 	Actually implementing 2D Sonic physics comes later (and shouldn't be hard-coded
 	into the engine)
@@ -83,6 +81,8 @@ extern "C" {
 #include "Audio.h"
 #include "Scene.h"
 
+#include "render/backend_sw.h"
+
 // --- engine variables ---
 typedef enum {
 	SUPERX_MAINGAME,
@@ -91,12 +91,6 @@ typedef enum {
 	SUPERX_PAUSED,
 	SUPERX_EXIT
 } SuperXState;
-
-typedef enum {
-	SUPERX_SW_RENDER,
-	SUPERX_C2D_RENDER,
-	SUPERX_KOS_RENDER
-} SuperXRenderType;
 
 extern SuperXState engineState;
 extern SuperXRenderType renderType;

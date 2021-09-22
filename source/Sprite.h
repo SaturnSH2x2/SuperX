@@ -13,6 +13,13 @@ typedef struct {
 	int paletteIndex;
 } SpriteSheet;
 
+typedef enum {
+	PALMODE_OVERWRITE = 0,	// overwrite entirety of the palette
+	PALMODE_APPEND    = 1,  // append color entries in GIF to existing palette
+	PALMODE_IGNORE    = 2,  // ignore given palette, load in indices (for reused palettes)
+	PALMODE_UNINDEXED = 3   // load pixel data in unpaletted (not recommended)
+} PaletteMode;
+
 // --- variables (SW render) ---
 extern SpriteSheet spriteSheetTable[MAX_SPRITESHEET_COUNT];
 extern u8 usedSpriteSheets;

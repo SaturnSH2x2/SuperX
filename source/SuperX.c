@@ -148,14 +148,13 @@ int InitSuperX() {
 		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	}
 
-	if (CreateFrameBuffer()) {
-		PrintLog("ERROR: failed to allocate frameBuffer\n");
-		return 1;
-	}
-
 	engineState = SUPERX_MAINGAME;
 	renderType  = SUPERX_SW_RENDER;
 	frameRate   = 60;
+
+	if (SetRenderBackend(SUPERX_SW_RENDER)) {
+		PrintLog("ERROR: could not initialize render backend\n");
+	}
 
 	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua", 0);
@@ -171,14 +170,12 @@ void CloseSuperX() {
 }
 
 void RunSuperX() {
-	int start, end;
-
 	while (engineState != SUPERX_EXIT) {
 		// reset keydown/keyup
 		memset(down, 0, MAX_GAMEPADS * 12);
 		memset(up,   0, MAX_GAMEPADS * 12);
 
-		start = SDL_GetTicks();
+		FrameLimitStart();
 
 		// get input before running scripts
 		ProcessEventsSDL();
@@ -194,11 +191,8 @@ void RunSuperX() {
 				break;
 		};
 
-		UpdateScreenSDL();
+		RenderBackendUpdate();
 
-		end = SDL_GetTicks();
-		if (end - start < 1000.0f / frameRate) {
-			SDL_Delay( (1000.0f / frameRate) - (end - start) );
-		}
+		FrameLimitEnd();
 	}
 }

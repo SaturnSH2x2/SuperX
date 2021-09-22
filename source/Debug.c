@@ -13,7 +13,7 @@ const char* devMenuOpts[4] = {
 static const int width = 320;
 static const int height = 175;
 
-static const u16 colUnselect = RGBA8_to_RGB565(0xf6878dff);
+static const u32 colUnselect = 0xf6878dff;
 
 int devXPos, devYPos;
 int entryOffset;
@@ -46,8 +46,8 @@ void InitDevMenu() {
 	PauseMusic();
 	dState = DEV_MAIN_MENU;
 
-	devXPos = bufferSizeX / 2 - (width / 2);
-	devYPos = bufferSizeY / 2 - (height / 2);
+	devXPos = screenWidth / 2 - (width / 2);
+	devYPos = screenHeight / 2 - (height / 2);
 	
 	devMenuSelect = 0;
 	entryOffset = 0;
@@ -150,20 +150,18 @@ void DevMenuInput(DevInput stat) {
 }
 
 void RunDevMenu() {
-	if (renderType == SUPERX_SW_RENDER) {
-		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
-	}
+	DrawRectangle(devXPos, devYPos, width, height, 0xff0000ff);
 
 	switch (dState) {
 		case DEV_MAIN_MENU:
-			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "WELCOME TO SUPERX DEVELOPER MENU");
-			DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 8, "SuperX, commit: %s", COMMIT);
-			DrawText(devXPos + 8, devYPos + 26, 0xffff, width - 8, gameName);
-			DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 8, gameVersion);
+			DrawText(devXPos + 8, devYPos + 8, 0xffffffff, width - 8, "WELCOME TO SUPERX DEVELOPER MENU");
+			DrawText(devXPos + 8, devYPos + 17, 0xffffffff, width - 8, "SuperX, commit: %s", COMMIT);
+			DrawText(devXPos + 8, devYPos + 26, 0xffffffff, width - 8, gameName);
+			DrawText(devXPos + 8, devYPos + 35, 0xffffffff, width - 8, gameVersion);
 
 			for (int i = 0; i < 4; i++) {
 				if (i == devMenuSelect)
-					DrawText(devXPos + 8, devYPos + 53 + (i * 9), 0xffff, width - 16,
+					DrawText(devXPos + 8, devYPos + 53 + (i * 9), 0xffffffff, width - 16,
 						devMenuOpts[i]);
 				else
 					DrawText(devXPos + 8, devYPos + 53 + (i * 9), colUnselect,
@@ -171,14 +169,14 @@ void RunDevMenu() {
 			}
 			break;
 		case DEV_CATEGORY_SELECT:
-			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "SELECT SCENE CATEGORY");
+			DrawText(devXPos + 8, devYPos + 8, 0xffffffff, width - 8, "SELECT SCENE CATEGORY");
 
 			for (int i = 0; i < DEVMENU_MAX_ENTRIES; i++) {
 				if (i + entryOffset >= categoryCount)
 					break;
 
 				if (i + entryOffset == devMenuSelect)
-					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffff, width - 16,
+					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffffffff, width - 16,
 							sceneTree[i + entryOffset].categoryName);
 				else
 					DrawText(devXPos + 8, devYPos + 26 + (i* 9), 
@@ -186,14 +184,14 @@ void RunDevMenu() {
 			}
 			break;
 		case DEV_SCENE_SELECT:
-			DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 8, "SELECT A SCENE");
+			DrawText(devXPos + 8, devYPos + 8, 0xffffffff, width - 8, "SELECT A SCENE");
 
 			for (int i = 0; i < DEVMENU_MAX_ENTRIES; i++) {
 				if (i + entryOffset >= selectedCategory->sceneCount)
 					break;
 
 				if (i + entryOffset == devMenuSelect)
-					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffff, width - 16,
+					DrawText(devXPos + 8, devYPos + 26 + (i * 9), 0xffffffff, width - 16,
 							selectedCategory->scenes[i + entryOffset].sceneName);
 				else
 					DrawText(devXPos + 8, devYPos + 26 + (i * 9), colUnselect, width - 16,
@@ -207,14 +205,12 @@ void RunDevMenu() {
 
 void DisplayScriptError(int objIndex, int spriteLayer) {
 	PauseMusic();
-	int devXPos = bufferSizeX / 2 - (width / 2);
-	int devYPos = bufferSizeY / 2 - (height / 2);
+	int devXPos = screenWidth / 2 - (width / 2);
+	int devYPos = screenHeight / 2 - (height / 2);
 
 	lua_State* L = objs[spriteLayer][objIndex];
 
-	if (renderType == SUPERX_SW_RENDER) {
-		DrawRectangleSW(devXPos, devYPos, width, height, 0xF807);
-	}
+	DrawRectangle(devXPos, devYPos, width, height, 0xff0000ff);
 
 	const char* errMsg1 = lua_tostring(L, -1);
 	const char* errMsg2 = lua_tostring(L, -2);

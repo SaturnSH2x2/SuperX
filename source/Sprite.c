@@ -60,6 +60,13 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	return 0;
 }
 
+// TODO: overhaul palette loading with the following options:
+//  * overwrite -> overwrites entire palette with palette data from GIF
+//  * append    -> append colors to palette (increment a colorsUsed variable?) (offset indices)
+//  * ignore    -> keep indices, don't load palette
+//  append mode seems handy for users that just converted their assets to GIF, while overwrite mode
+//  seems better suited for users making conscious use of the color palettes, with colors arranged with
+//  possible palette cycling in mind
 int LoadSpriteSheetFromGIF(const char* fileName, u8* sheetIndex, int paletteSlot, u8 loadPalette) {
 	gd_GIF* gif = gd_open_gif(fileName);
 
@@ -94,6 +101,7 @@ int LoadSpriteSheetFromGIF(const char* fileName, u8* sheetIndex, int paletteSlot
 			ptr++;
 
 			builtColor = 0xff << 24 | b << 16 | g << 8 | r;
+			colorPalette32[(paletteSlot * 256) + i] = builtColor;
 			colorPalette[(paletteSlot * 256) + i] = RGBA8_to_RGB565(builtColor);
 		}
 	}
