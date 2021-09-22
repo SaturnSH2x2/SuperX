@@ -121,7 +121,7 @@ static int l_playSoundEffect(lua_State* L) {
 }
 
 // render
-static int l_clearFrameBuffer(lua_State* L) {
+static int l_clearScreen(lua_State* L) {
 	int color = luaL_checkinteger(L, 1);
 	ClearScreen(color);
 
@@ -232,7 +232,7 @@ static const struct luaL_reg SuperXAudio [] = {
 };
 
 static const struct luaL_reg SuperXRender [] = {
-	{ "ClearScreen",	l_clearFrameBuffer },
+	{ "ClearScreen",	l_clearScreen },
 	{ "DrawSprite",		l_drawSprite },
 	{ "DrawRectangle",	l_drawRect },
 	{ "DrawText",		l_drawText },
