@@ -1,7 +1,7 @@
 # I have no idea how to properly write a Makefile
 # so this probably sucks but I kinda don't care
 
-SOURCES := $(wildcard source/*.c) lodepng/lodepng.cpp gifdec/gifdec.c
+SOURCES := $(wildcard source/*.c) $(wildcard source/*/*.c) lodepng/lodepng.cpp gifdec/gifdec.c
 COMMIT := $(shell git rev-parse --short HEAD)
 
 CC       := gcc
