@@ -22,7 +22,11 @@ int SetInputBackend(SuperXInputType iType) {
 			inputType = iType;
 			break;
 		default:
-			// TODO: add dummy backend
+			InitControllerInput = InitDummyInput;
+			UpdateController    = UpdateDummyInput;
+			GetButtonDown       = GetButtonDummy;
+			GetButtonHeld       = GetButtonDummy;
+			GetButtonUp         = GetButtonDummy;
 			inputType = SUPERX_DUMMY_INPUT;
 			break;
 	}

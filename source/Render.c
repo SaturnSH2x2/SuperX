@@ -45,7 +45,17 @@ int SetRenderBackend(SuperXRenderType rType) {
 			renderType = rType;
 			break;
 		default:
-			// TODO: dummy draw calls
+			RenderBackendInit   = InitDummyRender;
+			RenderBackendUpdate = UpdateDummyRender;
+			RenderBackendExit   = ExitDummyRender;
+
+			ClearScreen   = DummyClearScreen;
+			DrawSprite    = DummyDrawSprite;
+			DrawRectangle = DummyDrawRectangle;
+			DrawCharacter = DummyDrawCharacter;
+
+			FrameLimitStart = DummyFrameLimitStart;
+			FrameLimitEnd   = DummyFrameLimitEnd;
 
 			renderType = SUPERX_DUMMY_RENDER;
 			break;

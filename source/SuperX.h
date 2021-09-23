@@ -84,7 +84,9 @@ extern "C" {
 #include "Scene.h"
 
 #include "render/backend_sw.h"
+#include "render/backend_dummy_render.h"
 #include "input/backend_gc.h"
+#include "input/backend_dummy_input.h"
 
 // --- engine variables ---
 typedef enum {
