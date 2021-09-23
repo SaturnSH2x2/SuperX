@@ -1,6 +1,7 @@
 #include "SuperX.h"
 
 RenderBackendFeatures backendFeatures;
+SuperXRenderType renderType;
 
 // --- --- START FUNCTION POINTERS --- ---
 

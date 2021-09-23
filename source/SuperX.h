@@ -1,14 +1,3 @@
-// --- preprocessor variables and such ---
-#define Uint8  u8
-#define Uint16 u16
-#define Uint32 u32
-#define Uint64 u64
-
-#define Sint8  s8
-#define Sint16 s16
-#define Sint32 s32
-#define Sint64 s64
-
 /*
  *	Generally speaking, SuperX uses SDL 2.0 for video, input, and audio. There are
  *	some platform-specific exceptions, though.
@@ -39,6 +28,19 @@
 #define SUPERX_USING_SDL2     (1)
 #define SUPERX_USING_SDLMIXER (1)
 #endif
+
+#if SUPERX_PLATFORM != SUPERX_3DS
+// --- preprocessor variables and such ---
+#define Uint8  u8
+#define Uint16 u16
+#define Uint32 u32
+#define Uint64 u64
+#endif
+
+#define Sint8  s8
+#define Sint16 s16
+#define Sint32 s32
+#define Sint64 s64
 
 // --- include statements ---
 #include <stdio.h>
@@ -82,6 +84,7 @@ extern "C" {
 #include "Scene.h"
 
 #include "render/backend_sw.h"
+#include "input/backend_gc.h"
 
 // --- engine variables ---
 typedef enum {
@@ -93,16 +96,17 @@ typedef enum {
 } SuperXState;
 
 extern SuperXState engineState;
-extern SuperXRenderType renderType;
 extern int windowSizeX, windowSizeY;
 extern char isFullscreen;
 extern char basePath[255];
 extern int frameRate;
 
-// --- SDL functions ---
+#if SUPERX_USING_SDL2
 int SetupSDL(u32 windowFlags);
-void ProcessEventsSDL();
 void CloseSDL();
+#endif
+
+void ToggleFullscreen();
 
 int InitSuperX();
 void RunSuperX();

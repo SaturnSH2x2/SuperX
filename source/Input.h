@@ -16,27 +16,22 @@
 #define BUTTON_START  (10)
 #define BUTTON_SELECT (11)
 
-inline s32 GetInstanceID(SDL_GameController* g) {
-	SDL_Joystick* j = SDL_GameControllerGetJoystick(g);
-	if (!j) 
-		return -1;
+typedef enum {
+	SUPERX_GAMECONTROLLER_INPUT,
+	SUPERX_HID_3DS_INPUT,
+	SUPERX_MAPLE_INPUT,
+	SUPERX_DUMMY_INPUT
+} SuperXInputType;
 
-	return SDL_JoystickInstanceID(j);
-}
+extern SuperXInputType inputType;
+extern bool swapConfirmationButton;
 
-extern char down[MAX_GAMEPADS][12];
-extern char held[MAX_GAMEPADS][12];
-extern char   up[MAX_GAMEPADS][12];
+extern int (*InitControllerInput)();
+extern void (*UpdateController)();
+extern int (*GetButtonDown)(int, int);
+extern int (*GetButtonHeld)(int, int);
+extern int (*GetButtonUp)(int, int);
 
-extern SDL_GameController* gamePads[MAX_GAMEPADS];
-
-int InitControllerInput();
-void HandleControllerConnect(SDL_Event* e);
-void HandleControllerDisconnect(SDL_Event* e);
-void UpdateController(int which, int button, int state);
-
-int GetButtonDown(int port, int button);
-int GetButtonHeld(int port, int button);
-int GetButtonUp(int port, int button);
+int SetInputBackend(SuperXInputType iType);
 
 #endif
