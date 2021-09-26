@@ -86,10 +86,6 @@ int InitSuperX() {
 	}
 #endif
 
-	if (InitAudio()) {
-		PrintLog("NOTE: audio playback disabled\n");
-	}
-
 #if SUPERX_USING_SDL2
 	if (isFullscreen) {
 		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -100,10 +96,16 @@ int InitSuperX() {
 
 	if (SetRenderBackend(SUPERX_SW_RENDER)) {
 		PrintLog("ERROR: could not initialize render backend\n");
+		return 1;
 	}
 
 	if (SetInputBackend(SUPERX_GAMECONTROLLER_INPUT)) {
 		PrintLog("ERROR: could not initialize input backend\n");
+		return 1;
+	}
+
+	if (SetAudioBackend(SUPERX_MIXER_AUDIO)) {
+		PrintLog("ERROR: could not initialize audio backend, audio is disabled\n");
 	}
 
 	// TODO: load a full scene instead of just an object

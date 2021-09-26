@@ -1,5 +1,5 @@
 #include "../SuperX.h"
-#include "../SystemText.h"
+#include "SystemText.h"
 
 // TODO: replace u16 args with u32 and convert at draw time
 
