@@ -21,6 +21,10 @@ int SetPaletteEntry(u32 color, int palette, char index) {
 	return 0;
 }
 
+u32 GetPaletteEntry(int palette, char index) {
+	return colorPalette32[palette * 256 + index];
+}
+
 void SetTransparentColor(char index, int palette) {
 	PrintLog("NOTE: transparent color for palette %d set to index %d\n", palette, index);
 	transparentColor[palette] = index;
