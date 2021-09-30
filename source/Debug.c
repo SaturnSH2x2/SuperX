@@ -215,11 +215,21 @@ void DisplayScriptError(int objIndex, int spriteLayer) {
 	const char* errMsg1 = lua_tostring(L, -1);
 	const char* errMsg2 = lua_tostring(L, -2);
 
-	DrawText(devXPos + 8, devYPos + 8, 0xffff, width - 16, "SCRIPT ERROR");
-	DrawText(devXPos + 8, devYPos + 35, 0xffff, width - 16, "%s %s", errMsg1, errMsg2);
-	DrawText(devXPos + 8, devYPos + 17, 0xffff, width - 16, "Object will be disabled.");
+	DrawText(devXPos + 8, devYPos + 8, 0xffffff, width - 16, "SCRIPT ERROR");
+	DrawText(devXPos + 8, devYPos + 35, 0xffffff, width - 16, "%s %s", errMsg1, errMsg2);
+	DrawText(devXPos + 8, devYPos + 17, 0xffffff, width - 16, "Object will be disabled.");
 
 	FreeObject(objIndex, spriteLayer);
 
 	PrintLog("ERROR: %s%s\n", errMsg1, errMsg2);
+}
+
+void DisplayPaletteOverlay() {
+	for (int i = 0; i < 4; i++) {
+		int offsetX = screenWidth - (34 * (4 - i));
+		DrawText(offsetX, screenHeight - 42, 0xffffff, width - 16, "pal%d", i);
+		for (int p = 0; p < 256; p++) {
+			DrawRectangle(offsetX + (p % 16) * 2, screenHeight - 32 + (p / 16) * 2, 2, 2, GetPaletteEntry(i, p));
+		}
+	}
 }

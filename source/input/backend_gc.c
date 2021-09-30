@@ -86,6 +86,9 @@ void SDLInputGC() {
 						else
 							engineState = SUPERX_PAUSED;
 						break;
+					case SDLK_F10:
+						displayPaletteOverlay = !displayPaletteOverlay;
+						break;
 					default:
 						break;
 				}

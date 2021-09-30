@@ -102,6 +102,7 @@ typedef enum {
 extern SuperXState engineState;
 extern int windowSizeX, windowSizeY;
 extern char isFullscreen;
+extern char displayPaletteOverlay;
 extern char basePath[255];
 extern int frameRate;
 

@@ -5,6 +5,7 @@ int windowSizeX = DEFAULT_SCREENSIZEX;
 int windowSizeY = DEFAULT_SCREENSIZEY;
 
 char isFullscreen = 0;
+char displayPaletteOverlay = 0;
 char basePath[255];
 
 int frameRate;
@@ -108,6 +109,12 @@ int InitSuperX() {
 		PrintLog("ERROR: could not initialize audio backend, audio is disabled\n");
 	}
 
+
+	if (InitPalettes()) {
+		PrintLog("ERROR: could not allocate memory for color palettes\n");
+		return 1;
+	}
+
 	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua", 0);
 
@@ -141,6 +148,10 @@ void RunSuperX() {
 			default:
 				break;
 		};
+
+		if (displayPaletteOverlay) {
+			DisplayPaletteOverlay();
+		}
 
 		RenderBackendUpdate();
 
