@@ -115,6 +115,8 @@ int InitSuperX() {
 		return 1;
 	}
 
+	LoadScene("./testmap.json");
+
 	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua", 0);
 

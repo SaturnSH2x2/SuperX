@@ -20,6 +20,9 @@ int LoadScene(const char* sceneName) {
 	json_t* layerProperties;
 	json_t* layerData;
 	json_t* tileIndex;
+	json_t* property;
+	json_t* oString;
+	json_t* oVal;
 	json_error_t error;
 
 	int actualWidth;
@@ -68,9 +71,47 @@ int LoadScene(const char* sceneName) {
 		actualWidth = sceneLayers[i].width;
 
 		layerProperties = json_object_get(layerJs, "properties");
-		if (json_is_object(layerProperties)) {
-			AssignValueUnsignedInt(layerProperties, "actualLayerWidth", &sceneLayers[i].width);
-			AssignValueUnsignedInt(layerProperties, "actualLayerHeight", &sceneLayers[i].height);
+		if (json_is_array(layerProperties)) {
+			for (u16 p = 0; p < json_array_size(layerProperties); p++) {
+				property = json_array_get(layerProperties, p);
+				if (!json_is_object(property)) {
+					json_decref(property);
+					continue;
+				}
+
+				oString = json_object_get(property, "name");
+				if (!json_is_string(oString)) {
+					PrintLog("ERROR: property name given not string\n");
+					json_decref(oString);
+					json_decref(property);
+					continue;
+				}
+
+				// tile width
+				if (strncmp(json_string_value(oString), "actualTileWidth", 16)) {
+					oVal = json_object_get(property, "value");
+					if (!json_is_integer(oVal)) {
+						PrintLog("ERROR: actualTileWidth value not integer, ignoring\n");
+					} else {
+						sceneLayers[i].width = json_integer_value(oVal);
+					}
+
+					json_decref(oVal);
+				}
+
+				if (strncmp(json_string_value(oString), "actualTileHeight", 17)) {
+					oVal = json_object_get(property, "value");
+					if (!json_is_integer(oVal)) {
+						PrintLog("ERROR: actualTileHeight value not integer, ignoring\n");
+					} else {
+						sceneLayers[i].height = json_integer_value(oVal);
+					}
+
+					json_decref(oVal);
+				}
+
+				json_decref(oString);
+			}
 		}
 
 		// allocate memory for tile layer
@@ -110,6 +151,11 @@ int LoadScene(const char* sceneName) {
 			}
 		}
 
+		json_decref(oVal);
+		json_decref(oString);
+		json_decref(property);
+		json_decref(tileIndex);
+		json_decref(layerData);
 		json_decref(layerProperties);
 		json_decref(layerJs);
 		json_decref(layerArray);
