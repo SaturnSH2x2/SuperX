@@ -227,9 +227,9 @@ void DisplayScriptError(int objIndex, int spriteLayer) {
 void DisplayPaletteOverlay() {
 	for (int i = 0; i < 4; i++) {
 		int offsetX = screenWidth - (34 * (4 - i));
-		DrawText(offsetX, screenHeight - 42, 0xffffff, width - 16, "pal%d", i);
+		DrawText(offsetX, screenHeight - 46, 0xffffff, width - 16, "pal%d", i);
 		for (int p = 0; p < 256; p++) {
-			DrawRectangle(offsetX + (p % 16) * 2, screenHeight - 32 + (p / 16) * 2, 2, 2, GetPaletteEntry(i, p));
+			DrawRectangle(offsetX + (p % 16) * 2, screenHeight - 36 + (p / 16) * 2, 2, 2, GetPaletteEntry(i, p));
 		}
 	}
 }
