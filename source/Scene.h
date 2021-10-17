@@ -7,7 +7,7 @@ typedef struct {
 	unsigned int width;
 	unsigned int height;
 	
-	unsigned int* tileData;
+	int* tileData;
 
 	// parallax speed spanning entire layer
 	float parallaxFactorX;
@@ -21,7 +21,8 @@ typedef struct {
 } TileLayer;
 
 typedef struct {
-	int spriteIndex;
+	char tsName[0x100];
+	u8 spriteIndex;
 	int spacing;
 } Tileset;
 
@@ -38,6 +39,8 @@ extern char sceneName[255];
 int LoadScene(const char* sceneName);
 void FreeScene();
 int LoadTileset(const char* name);
+
+void DrawLayer(int layer);
 
 // for moving the camera from within scripts
 inline int GetCameraPosX() {

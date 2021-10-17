@@ -79,7 +79,7 @@ void DrawSpriteSW(int sheetID, int x, int y, int sx, int sy, int width, int heig
 
 	if (sx >= spriteSheetTable[sheetID].width || sx < 0 || sy >= spriteSheetTable[sheetID].height || sy < 0 ||
 			sx + width >= spriteSheetTable[sheetID].width || sy + height >= spriteSheetTable[sheetID].height) {
-		PrintLog("ERROR: (DrawSprite) Invalid sprite coordinates passed. Ignoring.\n");
+		PrintLog("ERROR: (DrawSprite) Invalid sprite coordinates passed (x: %d, y: %d, sx: %d, sy: %d). Ignoring.\n", x, y, sx, sy);
 		return;
 	}
 

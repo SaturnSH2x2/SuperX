@@ -1,5 +1,7 @@
 #include "SuperX.h"
 
+// god i hate dealing with json files in c
+
 u16 layerCount;
 
 Tileset sceneTileset;
@@ -23,9 +25,13 @@ int LoadScene(const char* sceneName) {
 	json_t* property;
 	json_t* oString;
 	json_t* oVal;
+	json_t* tilesets;
+	json_t* tileset1;
+	json_t* tileset1Source;
 	json_error_t error;
 
 	int actualWidth;
+	int pathLength;
 
 	root = json_load_file(sceneName, 0, &error);
 
@@ -40,6 +46,42 @@ int LoadScene(const char* sceneName) {
 		return 1;
 	}
 
+	// load tileset
+	tilesets = json_object_get(root, "tilesets");
+	if (!json_is_array(tilesets)) {
+		PrintLog("ERROR: parsing %s; could not read tilesets as array\n", sceneName);
+		json_decref(tilesets);
+		json_decref(root);
+		return 1;
+	}
+
+	tileset1 = json_array_get(tilesets, 0);
+	if (!json_is_object(tileset1)) {
+		PrintLog("ERROR: parsing %s; could not load tileset in index 1\n", sceneName);
+		json_decref(tileset1);
+		json_decref(tilesets);
+		json_decref(root);
+		return 1;
+	}
+
+	tileset1Source = json_object_get(tileset1, "source");
+	if (!json_is_string(tileset1Source)) {
+		PrintLog("ERROR: parsing %s; filename parameter for tileset not a string\n", sceneName);
+		json_decref(tileset1Source);
+		json_decref(tileset1);
+		json_decref(tilesets);
+		json_decref(root);
+		return 1;
+	}
+
+	// copy path into memory, then load later
+	pathLength = json_string_length(tileset1Source);
+	strncpy(sceneTileset.tsName, json_string_value(tileset1Source), 
+			(pathLength > 0x100) ? 0x99 : pathLength);
+	json_decref(tileset1Source);
+	json_decref(tileset1);
+	json_decref(tilesets);
+
 	layerArray = json_object_get(root, "layers");
 	if (!json_is_array(layerArray)) {
 		PrintLog("ERROR: parsing %s; could not read scene layers as array\n", sceneName);
@@ -50,6 +92,7 @@ int LoadScene(const char* sceneName) {
 
 	layerCount = (u16) json_array_size(layerArray);
 	sceneLayers = (TileLayer*) malloc(layerCount * sizeof(TileLayer));
+	memset(sceneLayers, 0, layerCount * sizeof(TileLayer));
 	if (!sceneLayers) {
 		PrintLog("ERROR: failed to allocate memory for scene layers\n");
 		json_decref(layerArray);
@@ -115,8 +158,10 @@ int LoadScene(const char* sceneName) {
 		}
 
 		// allocate memory for tile layer
-		sceneLayers[i].tileData = (unsigned int*) malloc(sceneLayers[i].width * sceneLayers[i].height * 
-				sizeof(unsigned int));
+		sceneLayers[i].tileData = (int*) malloc(sceneLayers[i].width * sceneLayers[i].height * 
+				sizeof(int));
+		memset(sceneLayers[i].tileData, 0, sceneLayers[i].width * sceneLayers[i].height *
+				sizeof(int));
 		if (!sceneLayers[i].tileData) {
 			PrintLog("ERROR: failed to allocate memory for tile layer %d\n", i);
 			json_decref(layerProperties);
@@ -127,6 +172,8 @@ int LoadScene(const char* sceneName) {
 		}
 
 		// copy layer data
+		// NOTE: currently, only CSV data is supported, might add support for
+		// uncompressed base64 eventually but eh
 		layerData = json_object_get(layerJs, "data");
 		if (!json_is_array(layerData)) {
 			PrintLog("ERROR: failed to read tile data for layer %d\n", i);
@@ -162,6 +209,11 @@ int LoadScene(const char* sceneName) {
 		json_decref(root);
 	}
 
+	if (LoadTileset(sceneTileset.tsName)) {
+		PrintLog("ERROR: could not load tileset\n");
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -177,5 +229,109 @@ void FreeScene() {
 }
 
 int LoadTileset(const char* name) {
+	json_t* tsRoot;
+	json_t* property;
+	json_error_t error;
+
+	char imgPath[0x100];
+	int pathLength;
+
+	tsRoot = json_load_file(name, 0, &error);
+	if (!tsRoot) {
+		PrintLog("ERROR: parsing %s, line %d %s\n", name, error.line, error.text);
+		return 1;
+	}
+
+	if (!json_is_object(tsRoot)) {
+		PrintLog("ERROR: parsing %s: tileset root is not an object\n", name);
+		json_decref(tsRoot);
+		return 1;
+	}
+
+	// look for file name and load it into memory
+	property = json_object_get(tsRoot, "image");	
+	if (!json_is_string(property)) {
+		PrintLog("ERROR: expected string for property \"image\"\n");
+		json_decref(property);
+		json_decref(tsRoot);
+		return 1;
+	}
+
+	// check extension of file
+	pathLength = json_string_length(property);
+	if (pathLength > 0x100) {
+		PrintLog("ERROR: path given for property \"image\" exceeds 255 characters\n");
+		json_decref(property);
+		json_decref(tsRoot);
+		return 1;
+	}
+
+	strncpy(imgPath, json_string_value(property), (pathLength >= 0x100) ? 0x99 : pathLength);
+	if ( 	
+			(imgPath[pathLength - 3] == 'g' || imgPath[pathLength - 3] == 'G') && 
+	     		(imgPath[pathLength - 2] == 'i' || imgPath[pathLength - 2] == 'I') &&
+			(imgPath[pathLength - 1] == 'f' || imgPath[pathLength - 1] == 'F')
+	   ) {
+		if (LoadSpriteSheetFromGIF(imgPath, &sceneTileset.spriteIndex, 0, 0)) {
+			PrintLog("ERROR: could not load tileset graphic\n");
+			json_decref(property);
+			json_decref(tsRoot);
+			return 1;
+		}
+	} else if (
+			(imgPath[pathLength - 3] == 'p' || imgPath[pathLength - 2] == 'P') &&
+			(imgPath[pathLength - 2] == 'n' || imgPath[pathLength - 2] == 'N') &&
+			(imgPath[pathLength - 1] == 'g' || imgPath[pathLength - 1] == 'G')
+		  ) {
+		if (LoadSpriteSheetFromPNG(imgPath, &sceneTileset.spriteIndex)) {
+			PrintLog("ERROR: could not load tileset graphic\n");
+			json_decref(property);
+			json_decref(tsRoot);
+			return 1;
+		}
+	}
+
+	PrintLog("Scene tileset is loaded into sprite slot %d\n", sceneTileset.spriteIndex);
+
+	json_decref(property);
+	json_decref(tsRoot);
+
 	return 0;
+}
+
+// TODO: this is a mess, fix this somehow
+void DrawLayer(int layer) {
+	int startingPosX = (cameraPosX / 16) * 16;
+	int startingPosY = (cameraPosY / 16) * 16;
+
+	SpriteSheet* ss = &spriteSheetTable[sceneTileset.spriteIndex];
+	int* tilePtr = &sceneLayers[layer].tileData[
+				startingPosY / 16 * ss->height + 
+				startingPosX % ((ss->width / 16) * 16)];
+	int* tile = tilePtr;
+
+	PrintLog("camera pos: x: %d, y: %d\n", startingPosX, startingPosY);
+	tile = &sceneLayers[layer].tileData[
+			startingPosY / 16 * ss->height + 
+			startingPosX % ((ss->width / 16) * 16)];
+
+	for (int y = startingPosY; y < startingPosY + screenHeight + 16; y += 16) {
+		int drawY = y - startingPosY;
+		for (int x = startingPosX; x < startingPosX + screenWidth + 16; x+= 16) {
+			int drawX = x - startingPosX;
+
+			if (*tile == 0) {
+				tile++;
+				continue;
+			}
+
+			PrintLog("Tile: %d, x: %d, y: %d\n", *tile + 1, x, y);
+			DrawSprite(sceneTileset.spriteIndex, drawX, drawY, 
+					((*tile - 1) * 16) % ss->width,
+					((*tile - 1) / ss->width) * 16,
+					16, 16, NOFLIP);	
+
+			tile++;
+		}
+	}
 }

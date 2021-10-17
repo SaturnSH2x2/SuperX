@@ -115,7 +115,7 @@ int InitSuperX() {
 		return 1;
 	}
 
-	LoadScene("./testmap.json");
+	LoadScene("./green-hill-map.json");
 
 	// TODO: load a full scene instead of just an object
 	InitObject("debug.lua", 0);
@@ -142,6 +142,7 @@ void RunSuperX() {
 
 		switch (engineState) {
 			case SUPERX_MAINGAME:
+				DrawLayer(0);
 				UpdateObjects(0);
 				break;
 			case SUPERX_DEVMENU:
@@ -150,6 +151,7 @@ void RunSuperX() {
 			default:
 				break;
 		};
+
 
 		if (displayPaletteOverlay) {
 			DisplayPaletteOverlay();
