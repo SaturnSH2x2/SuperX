@@ -69,6 +69,10 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 //  possible palette cycling in mind
 int LoadSpriteSheetFromGIF(const char* fileName, u8* sheetIndex, int paletteSlot, u8 loadPalette) {
 	gd_GIF* gif = gd_open_gif(fileName);
+	if (!gif) {
+		PrintLog("ERROR: could not load gif %d\n", fileName);
+		return 1;
+	}
 
 	PrintLog("NOTE: Loading %s, w: %d, h: %d, palette size: %d\n", fileName, gif->width, gif->height, gif->palette->size);
 
