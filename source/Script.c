@@ -208,6 +208,25 @@ static int l_setTransparentColor(lua_State* L) {
 	return 0;
 }
 
+// scene
+static int l_getCameraPosX(lua_State* L) {
+	lua_pushnumber(L, GetCameraPosX());
+	return 1;
+}
+
+static int l_getCameraPosY(lua_State* L) {
+	lua_pushnumber(L, GetCameraPosY());
+	return 1;
+}
+
+static int l_offsetCamera(lua_State* L) {
+	int x = luaL_checkinteger(L, 1);
+	int y = luaL_checkinteger(L, 2);
+
+	OffsetCamera(x, y);
+	return 1;
+}
+
 // --- end Lua wrapper functions ---
 
 // --- begin Lua library definitions ---
@@ -253,6 +272,13 @@ static const struct luaL_reg SuperXPalette [] = {
 	{ "GetPaletteEntry",		l_getPaletteEntry     },
 	{ "SetTransparentColor",	l_setTransparentColor },
 	{ NULL,				NULL	  	      }
+};
+
+static const struct luaL_reg SuperXScene [] = {
+	{ "GetCameraPosX",		l_getCameraPosX },
+	{ "GetCameraPosY",		l_getCameraPosY },
+	{ "OffsetCamera",		l_offsetCamera  },
+	{ NULL,				NULL 		}
 };
 
 void SetupAPI(lua_State* L) {
@@ -315,6 +341,10 @@ void SetupAPI(lua_State* L) {
 	lua_newtable(L);
 	luaL_setfuncs(L, SuperXPalette, 0);
 	lua_setglobal(L, "Palette");
+
+	lua_newtable(L);
+	luaL_setfuncs(L, SuperXScene, 0);
+	lua_setglobal(L, "Scene");
 }
 
 // --- end Lua library definitions ---

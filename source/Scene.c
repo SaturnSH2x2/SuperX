@@ -248,6 +248,9 @@ int LoadTileset(const char* name) {
 		return 1;
 	}
 
+	// check total tile count
+	AssignValueInt(tsRoot, "tilecount", &sceneTileset.maxTiles);
+
 	// look for file name and load it into memory
 	property = json_object_get(tsRoot, "image");	
 	if (!json_is_string(property)) {
@@ -301,37 +304,48 @@ int LoadTileset(const char* name) {
 
 // TODO: this is a mess, fix this somehow
 void DrawLayer(int layer) {
-	int startingPosX = (cameraPosX / 16) * 16;
-	int startingPosY = (cameraPosY / 16) * 16;
+	int startingPosX = cameraPosX;
+	int startingPosY = cameraPosY;
 
 	SpriteSheet* ss = &spriteSheetTable[sceneTileset.spriteIndex];
-	int* tilePtr = &sceneLayers[layer].tileData[
-				startingPosY / 16 * ss->height + 
-				startingPosX % ((ss->width / 16) * 16)];
-	int* tile = tilePtr;
-
-	PrintLog("camera pos: x: %d, y: %d\n", startingPosX, startingPosY);
-	tile = &sceneLayers[layer].tileData[
-			startingPosY / 16 * ss->height + 
-			startingPosX % ((ss->width / 16) * 16)];
+	int* tile;
 
 	for (int y = startingPosY; y < startingPosY + screenHeight + 16; y += 16) {
 		int drawY = y - startingPosY;
+		int xCount = 0;
+		tile = &sceneLayers[layer].tileData[
+				(y / 16)            * sceneLayers[layer].width + 
+				(startingPosX / 16) % sceneLayers[layer].width
+		];	
+
 		for (int x = startingPosX; x < startingPosX + screenWidth + 16; x+= 16) {
 			int drawX = x - startingPosX;
+			xCount++;
 
-			if (*tile == 0) {
+			// loop layer horizontally
+			if (xCount >= (int) sceneLayers[layer].width) {
+				tile = &sceneLayers[layer].tileData[
+					(y / 16) * sceneLayers[layer].width
+				];
+				xCount = 0;
+			}
+
+			if (*tile <= 0 || *tile > sceneTileset.maxTiles) {
+				PrintLog("Invalid tile ID: %d\n", *tile - 1);
 				tile++;
 				continue;
 			}
 
-			PrintLog("Tile: %d, x: %d, y: %d\n", *tile + 1, x, y);
+			int sx = ((*tile - 1) * 16) % ss->width;
+			int sy = ((*tile - 1) * 16) / ss->width * 16;
+			PrintLog("x: %d, y: %d, sx: %d, sy: %d, tile id: %d\n",
+					x, y, sx, sy, *tile - 1);
+
 			DrawSprite(sceneTileset.spriteIndex, drawX, drawY, 
-					((*tile - 1) * 16) % ss->width,
-					((*tile - 1) / ss->width) * 16,
-					16, 16, NOFLIP);	
+					sx, sy, 16, 16, NOFLIP);	
 
 			tile++;
 		}
+
 	}
 }

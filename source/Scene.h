@@ -24,6 +24,7 @@ typedef struct {
 	char tsName[0x100];
 	u8 spriteIndex;
 	int spacing;
+	int maxTiles;
 } Tileset;
 
 extern u16 layerCount;
