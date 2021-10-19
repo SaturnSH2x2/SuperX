@@ -302,28 +302,34 @@ int LoadTileset(const char* name) {
 	return 0;
 }
 
-// TODO: this is a mess, fix this somehow
 void DrawLayer(int layer) {
 	int startingPosX = cameraPosX;
 	int startingPosY = cameraPosY;
+
+	int xSpacing = startingPosX - ((startingPosX / 16) * 16);
 
 	SpriteSheet* ss = &spriteSheetTable[sceneTileset.spriteIndex];
 	int* tile;
 
 	for (int y = startingPosY; y < startingPosY + screenHeight + 16; y += 16) {
 		int drawY = y - startingPosY;
-		int xCount = 0;
+		int xCount = (startingPosX) % (sceneLayers[layer].width * 16);
+		if (xCount < 0)
+			xCount = (startingPosX - 16 + sceneLayers[layer].width * 16) % (sceneLayers[layer].width * 16);
 		tile = &sceneLayers[layer].tileData[
 				(y / 16)            * sceneLayers[layer].width + 
 				(startingPosX / 16) % sceneLayers[layer].width
 		];	
 
 		for (int x = startingPosX; x < startingPosX + screenWidth + 16; x+= 16) {
-			int drawX = x - startingPosX;
-			xCount++;
+			int drawX = x - startingPosX - xSpacing;
+			xCount += 16;
+
+			if (drawX <= 0)
+				xCount -= 16;
 
 			// loop layer horizontally
-			if (xCount >= (int) sceneLayers[layer].width) {
+			if (xCount >= (int) sceneLayers[layer].width * 16) {
 				tile = &sceneLayers[layer].tileData[
 					(y / 16) * sceneLayers[layer].width
 				];
@@ -338,8 +344,8 @@ void DrawLayer(int layer) {
 
 			int sx = ((*tile - 1) * 16) % ss->width;
 			int sy = ((*tile - 1) * 16) / ss->width * 16;
-			PrintLog("x: %d, y: %d, sx: %d, sy: %d, tile id: %d\n",
-					x, y, sx, sy, *tile - 1);
+			//PrintLog("x: %d, y: %d, sx: %d, sy: %d, tile id: %d\n",
+			//		x, y, sx, sy, *tile - 1);
 
 			DrawSprite(sceneTileset.spriteIndex, drawX, drawY, 
 					sx, sy, 16, 16, NOFLIP);	
