@@ -295,18 +295,24 @@ void DrawLayer(int layer) {
 	int startingPosY = cameraPosY;
 
 	int xSpacing = startingPosX - ((startingPosX / 16) * 16);
+	int ySpacing = startingPosY - ((startingPosY / 16) * 16);
 
 	SpriteSheet* ss = &spriteSheetTable[sceneTileset.spriteIndex];
 	int* tile;
+	int xCount, yCount;
 
+	yCount = (startingPosY) % (sceneLayers[layer].height * 16);
 	for (int y = startingPosY; y < startingPosY + screenHeight + 16; y += 16) {
-		int drawY = y - startingPosY;
-		int xCount = (startingPosX) % (sceneLayers[layer].width * 16);
-		if (xCount < 0)
-			xCount = (startingPosX - 16 + sceneLayers[layer].width * 16) % (sceneLayers[layer].width * 16);
+		int drawY = y - startingPosY - ySpacing;
+
+		xCount = (startingPosX) % (sceneLayers[layer].width * 16);
+		yCount++;
+
+		//if (xCount < 0)
+		//	xCount = (startingPosX - 16 + sceneLayers[layer].width * 16) % (sceneLayers[layer].width * 16);
 		tile = &sceneLayers[layer].tileData[
-				(y / 16)            * sceneLayers[layer].width + 
-				(startingPosX / 16) % sceneLayers[layer].width
+				((y / 16) % sceneLayers[layer].height) * sceneLayers[layer].width + 
+				(startingPosX / 16)                    % sceneLayers[layer].width
 		];	
 
 		for (int x = startingPosX; x < startingPosX + screenWidth + 16; x+= 16) {
@@ -319,7 +325,7 @@ void DrawLayer(int layer) {
 			// loop layer horizontally
 			if (xCount >= (int) sceneLayers[layer].width * 16) {
 				tile = &sceneLayers[layer].tileData[
-					(y / 16) * sceneLayers[layer].width
+					((y / 16) % sceneLayers[layer].height) * sceneLayers[layer].width
 				];
 				xCount = 0;
 			}
