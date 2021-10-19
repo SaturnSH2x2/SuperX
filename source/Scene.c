@@ -130,28 +130,13 @@ int LoadScene(const char* sceneName) {
 					continue;
 				}
 
-				// tile width
-				if (strncmp(json_string_value(oString), "actualTileWidth", 16)) {
-					oVal = json_object_get(property, "value");
-					if (!json_is_integer(oVal)) {
-						PrintLog("ERROR: actualTileWidth value not integer, ignoring\n");
-					} else {
-						sceneLayers[i].width = json_integer_value(oVal);
-					}
-
-					json_decref(oVal);
+				// TODO: fix
+				if (strncmp(json_string_value(oString), "actualTileWidth", 16) == 0) {
+					AssignValueUnsignedInt(property, "value", &sceneLayers[i].width);
+				} else if (strncmp(json_string_value(oString), "actualTileHeight", 17) == 0) {
+					AssignValueUnsignedInt(property, "value", &sceneLayers[i].height);
 				}
 
-				if (strncmp(json_string_value(oString), "actualTileHeight", 17)) {
-					oVal = json_object_get(property, "value");
-					if (!json_is_integer(oVal)) {
-						PrintLog("ERROR: actualTileHeight value not integer, ignoring\n");
-					} else {
-						sceneLayers[i].height = json_integer_value(oVal);
-					}
-
-					json_decref(oVal);
-				}
 
 				json_decref(oString);
 			}
