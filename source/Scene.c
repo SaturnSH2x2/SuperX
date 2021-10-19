@@ -28,6 +28,7 @@ int LoadScene(const char* sceneName) {
 	json_t* tilesets;
 	json_t* tileset1;
 	json_t* tileset1Source;
+	json_t* objects;
 	json_error_t error;
 
 	int actualWidth;
@@ -78,10 +79,11 @@ int LoadScene(const char* sceneName) {
 	// copy path into memory, then load later
 	pathLength = json_string_length(tileset1Source);
 	strncpy(sceneTileset.tsName, json_string_value(tileset1Source), 
-			(pathLength > 0x100) ? 0x99 : pathLength);
+			(pathLength > 0x100) ? 0x100 : pathLength);
 	json_decref(tileset1Source);
 	json_decref(tileset1);
 	json_decref(tilesets);
+	PrintLog("NOTE: tileset name: %s\n", sceneTileset.tsName);
 
 	layerArray = json_object_get(root, "layers");
 	if (!json_is_array(layerArray)) {
@@ -103,9 +105,21 @@ int LoadScene(const char* sceneName) {
 
 	for (u16 i = 0; i < layerCount; i++) {
 		layerJs = json_array_get(layerArray, i);
+		if (!layerJs) {
+			PrintLog("ERROR: null layer read?\n");
+			continue;
+		}
+
 		if (!json_is_object(layerJs)) {
-			PrintLog("ERROR: parsing %s, layer %d; could not read layer as object\n", sceneName, i);
-			json_decref(layerJs);
+			PrintLog("ERROR: parsing %s, layer %d; could not read layer as object, type given: %d\n", sceneName, i);
+			continue;
+		}
+
+		// TODO: add object loading function here or something
+		objects = json_object_get(layerJs, "objects");
+		if (json_is_array(objects)) {
+			PrintLog("NOTE: skipping object layer\n");
+			json_decref(objects);
 			continue;
 		}
 
@@ -131,7 +145,6 @@ int LoadScene(const char* sceneName) {
 					continue;
 				}
 
-				// TODO: fix
 				if (strncmp(json_string_value(oString), "actualTileWidth", 16) == 0) {
 					AssignValueUnsignedInt(property, "value", &sceneLayers[i].width);
 				} else if (strncmp(json_string_value(oString), "actualTileHeight", 17) == 0) {
@@ -184,6 +197,7 @@ int LoadScene(const char* sceneName) {
 			}
 		}
 
+		json_decref(objects);
 		json_decref(oVal);
 		json_decref(oString);
 		json_decref(property);
@@ -191,9 +205,11 @@ int LoadScene(const char* sceneName) {
 		json_decref(layerData);
 		json_decref(layerProperties);
 		json_decref(layerJs);
-		json_decref(layerArray);
-		json_decref(root);
+
 	}
+
+	json_decref(layerArray);
+	json_decref(root);
 
 	if (LoadTileset(sceneTileset.tsName)) {
 		PrintLog("ERROR: could not load tileset\n");
@@ -222,6 +238,7 @@ int LoadTileset(const char* name) {
 	char imgPath[0x100];
 	int pathLength;
 
+	memset(imgPath, 0, 0x100 * sizeof(char));
 	tsRoot = json_load_file(name, 0, &error);
 	if (!tsRoot) {
 		PrintLog("ERROR: parsing %s, line %d %s\n", name, error.line, error.text);

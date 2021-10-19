@@ -21,7 +21,7 @@ typedef struct {
 } TileLayer;
 
 typedef struct {
-	char tsName[0x100];
+	char tsName[0x101];
 	u8 spriteIndex;
 	int spacing;
 	int maxTiles;
