@@ -45,6 +45,7 @@
 // --- include statements ---
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <lodepng.h>
 #include <jansson.h>
 #include <gifdec.h>
@@ -62,7 +63,7 @@ extern "C" {
 
 /*
 	TODO: just a general laundry list of stuff to implement
-		*  Allow user to determine sprite/layer order.
+		*  Properly load in objects from object layers.
 		*  Load tilemask collision data from JSON (generating said data should be done outside the engine)
 		*  Add keyboard input support (some people don't have controllers)
 		*  Rework palette loading from GIFs
@@ -73,6 +74,7 @@ extern "C" {
 	into the engine)
 */
 
+#include "Math.h"
 #include "String.h"
 #include "File.h"
 #include "Debug.h"

@@ -34,7 +34,7 @@ int LoadScene(const char* sceneName) {
 	int actualWidth;
 	int pathLength;
 
-	// TODO: append scene path
+	// TODO: derive scene path from filename
 	root = json_load_file(sceneName, 0, &error);
 
 	if (!root) {
@@ -118,6 +118,9 @@ int LoadScene(const char* sceneName) {
 		// TODO: add object loading function here or something
 		objects = json_object_get(layerJs, "objects");
 		if (json_is_array(objects)) {
+			sceneLayers[i].tileData = NULL;
+			sceneLayers[i].objects = (lua_State**) malloc(MAX_OBJECTS * sizeof(lua_State*));
+			memset(sceneLayers[i].objects, 0, MAX_OBJECTS * sizeof(lua_State*));
 			PrintLog("NOTE: skipping object layer\n");
 			json_decref(objects);
 			continue;
@@ -161,6 +164,7 @@ int LoadScene(const char* sceneName) {
 				sizeof(int));
 		memset(sceneLayers[i].tileData, 0, sceneLayers[i].width * sceneLayers[i].height *
 				sizeof(int));
+		sceneLayers[i].objects = NULL;
 		if (!sceneLayers[i].tileData) {
 			PrintLog("ERROR: failed to allocate memory for tile layer %d\n", i);
 			json_decref(layerProperties);
@@ -224,7 +228,8 @@ void FreeScene() {
 		return;
 
 	for (u16 i = 0; i < layerCount; i++) {
-		free(sceneLayers[i].tileData);
+		if (sceneLayers[i].tileData)
+			free(sceneLayers[i].tileData);
 	}
 
 	free(sceneLayers);

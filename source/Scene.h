@@ -7,8 +7,14 @@ typedef struct {
 	unsigned int width;
 	unsigned int height;
 	
+	// only allocated for tile layers
 	int* tileData;
 
+	// all relevant object data is stored on the Lua stack
+	// these just point to objs in Script.c
+	lua_State** objects;
+
+	// TODO: have this read in
 	// parallax speed spanning entire layer
 	float parallaxFactorX;
 	float parallaxFactorY;

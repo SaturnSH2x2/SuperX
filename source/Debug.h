@@ -19,6 +19,6 @@ void PrintLog(const char* str, ...);
 void InitDevMenu();
 void RunDevMenu();
 void DevMenuInput(DevInput stat);
-void DisplayScriptError(int objIndex, int spriteLayer);
+void DisplayScriptError(lua_State* L);
 
 #endif

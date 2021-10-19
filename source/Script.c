@@ -1,6 +1,6 @@
 #include "SuperX.h"
 
-lua_State* objs[SPRITE_LAYER_COUNT][MAX_OBJECTS] = { NULL };
+lua_State* objs[MAX_OBJECTS] = { NULL };
 
 // --- begin Lua wrapper functions ---
 
@@ -281,6 +281,7 @@ static const struct luaL_reg SuperXScene [] = {
 	{ NULL,				NULL 		}
 };
 
+// TODO: add frame rate to this so that scripts can adjust to 50Hz PAL Dreamcast systems
 void SetupAPI(lua_State* L) {
 	lua_newtable(L);
 	luaL_setfuncs(L, SuperXDebug, 0);
@@ -347,11 +348,26 @@ void SetupAPI(lua_State* L) {
 	lua_setglobal(L, "Scene");
 }
 
+void SetupBasicObjectAttributes(lua_State* L, float x, float y, int activeOffscreen) {
+	lua_newtable(L);
+	lua_pushnumber(L, x);
+	lua_setfield(L, -2, "x");
+	lua_pushnumber(L, y);
+	lua_setfield(L, -2, "y");
+	lua_pushnumber(L, 0);
+	lua_setfield(L, -2, "widthRadius");
+	lua_pushnumber(L, 0);
+	lua_setfield(L, -2, "heightRadius");
+	lua_pushboolean(L, activeOffscreen);
+	lua_setfield(L, -2, "activeOffscreen");
+	lua_setglobal(L, "Self");
+}
+
 // --- end Lua library definitions ---
-int InitObject(const char* scriptName, int sLayer) {
+int InitObject(const char* scriptName, int sLayer, float x, float y) {
 	int i = -1;
 	for (int x = 0; x < MAX_OBJECTS; x++) {
-		if (objs[sLayer][x] == NULL) {
+		if (objs[x] == NULL) {
 			i = x;
 			break;
 		}
@@ -362,65 +378,79 @@ int InitObject(const char* scriptName, int sLayer) {
 		return 1;
 	}
 
-	objs[sLayer][i] = luaL_newstate();
-	luaL_openlibs(objs[sLayer][i]);
+	objs[i] = luaL_newstate();
+	luaL_openlibs(objs[i]);
 	
-	if (luaL_loadfile(objs[sLayer][i], scriptName)) {
+	if (luaL_loadfile(objs[i], scriptName)) {
 		engineState = SUPERX_SCRIPTERROR;
-		DisplayScriptError(i, sLayer);
+		DisplayScriptError(objs[i]);
 		return 1;
 	}
 
-	SetupAPI(objs[sLayer][i]);
+	SetupAPI(objs[i]);
+	SetupBasicObjectAttributes(objs[i], x, y);
 
-	if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
+	if (lua_pcall(objs[i], 0, 0, 0)) {
 		engineState = SUPERX_SCRIPTERROR;
-		DisplayScriptError(i, sLayer);
+		DisplayScriptError(objs[i]);
 		return 1;
 	}
+
 	// the script may not necessarily have an init function so 
 	// we don't throw an error for this
-	lua_getglobal(objs[sLayer][i], "init");
-	if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
-		lua_getglobal(objs[sLayer][i], "init");
-		if (lua_isfunction(objs[sLayer][i], -1)) {
+	lua_getglobal(objs[i], "init");
+	if (lua_pcall(objs[i], 0, 0, 0)) {
+		lua_getglobal(objs[i], "init");
+		if (lua_isfunction(objs[i], -1)) {
 			engineState = SUPERX_SCRIPTERROR;
-			DisplayScriptError(i, sLayer);
+			DisplayScriptError(objs[i]);
+		}
+	}
+
+	if (!sceneLayers[sLayer].objects) {
+		PrintLog("NOTE: object data for layer %d not allocated, ignoring assignment\n", sLayer);
+		return 0;
+	}
+
+	for (int y = 0; y < MAX_OBJECTS; y++) {
+		if (sceneLayers[sLayer].objects[y] == NULL) {
+			sceneLayers[sLayer].objects[y] = objs[i];
+			break;
 		}
 	}
 
 	return 0;
 }
 
-void FreeObject(int objID, int sLayer) {
-	lua_close(objs[sLayer][objID]);
-	objs[sLayer][objID] = NULL;
+void FreeObject(int objID) {
+	lua_close(objs[objID]);
+	objs[objID] = NULL;
 }
 
 void FreeAllObjects() {
-	for (int j = 0; j < SPRITE_LAYER_COUNT; j++) {
-		for (int i = 0; i < MAX_OBJECTS; i++) {
-			if (objs[j][i] != NULL) {
-				lua_close(objs[j][i]);
-				objs[j][i] = NULL;
-			}
-		}
+	for (int i = 0; i < MAX_OBJECTS; i++) {
+		if (objs[i] != NULL)
+			FreeObject(i);
 	}
 }
 
 void UpdateObjects(int sLayer) {
+	if (!sceneLayers[sLayer].objects)
+		return;
+
 	for (int i = 0; i < MAX_OBJECTS; i++) {
-		if (objs[sLayer][i] == NULL)
+		if (!sceneLayers[sLayer].objects[i])
 			continue;
 
-		lua_getglobal(objs[sLayer][i], "update");
-		if (lua_pcall(objs[sLayer][i], 0, 0, 0)) {
-			lua_getglobal(objs[sLayer][i], "update");
-			if (!lua_isfunction(objs[sLayer][i], -1))
+
+		lua_getglobal(sceneLayers[sLayer].objects[i], "update");
+		if (lua_pcall(sceneLayers[sLayer].objects[i], 0, 0, 0)) {
+			lua_getglobal(objs[i], "update");
+			if (!lua_isfunction(sceneLayers[sLayer].objects[i], -1))
 				continue;
 
 			engineState = SUPERX_SCRIPTERROR;
-			DisplayScriptError(i, sLayer);
+			DisplayScriptError(sceneLayers[sLayer].objects[i]);
 		}
 	}
 }

@@ -203,12 +203,10 @@ void RunDevMenu() {
 	};
 }
 
-void DisplayScriptError(int objIndex, int spriteLayer) {
+void DisplayScriptError(lua_State* L) {
 	PauseMusic();
 	int devXPos = screenWidth / 2 - (width / 2);
 	int devYPos = screenHeight / 2 - (height / 2);
-
-	lua_State* L = objs[spriteLayer][objIndex];
 
 	DrawRectangle(devXPos, devYPos, width, height, 0xff0000ff);
 
@@ -219,7 +217,13 @@ void DisplayScriptError(int objIndex, int spriteLayer) {
 	DrawText(devXPos + 8, devYPos + 35, 0xffffff, width - 16, "%s %s", errMsg1, errMsg2);
 	DrawText(devXPos + 8, devYPos + 17, 0xffffff, width - 16, "Object will be disabled.");
 
-	FreeObject(objIndex, spriteLayer);
+	// probably a better way to do this tbh
+	for (int i = 0; i < MAX_OBJECTS; i++) {
+		if (L == objs[i]) {
+			FreeObject(i);
+			break;
+		}
+	}
 
 	PrintLog("ERROR: %s%s\n", errMsg1, errMsg2);
 }

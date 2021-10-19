@@ -118,7 +118,7 @@ int InitSuperX() {
 	LoadScene("./green-hill-map.json");
 
 	// TODO: load a full scene instead of just an object
-	InitObject("debug.lua", 0);
+	InitObject("debug.lua", 1, 0.0, 0.0);
 
 	return 0;
 }
@@ -144,7 +144,7 @@ void RunSuperX() {
 			case SUPERX_MAINGAME:
 				// TODO: allow sprite/layer draw order to be set by the user
 				DrawLayer(0);
-				UpdateObjects(0);
+				UpdateObjects(1);
 				break;
 			case SUPERX_DEVMENU:
 				RunDevMenu();

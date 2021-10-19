@@ -1,16 +1,18 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#define MAX_OBJECTS        (50)
-#define SPRITE_LAYER_COUNT (7)
+#define MAX_OBJECTS        (999)
 #define luaL_reg luaL_Reg
 
-extern lua_State* objs[SPRITE_LAYER_COUNT][MAX_OBJECTS];
+extern lua_State* objs[MAX_OBJECTS];
 
-int InitObject(const char* scriptName, int sLayer);
-void FreeObject(int objID, int sLayer);
+int InitObject(const char* scriptName, int sLayer, float x, float y);
+void FreeObject(int objID);
 void FreeAllObjects();
 void UpdateObjects(int sLayer);
+
+void SetupAPI();
+void SetupBasicObjectAttributes(lua_State* L, float x, float y);
 
 // i'm sure there's totally a great reason as to why this function
 // doesn't exist in the base library
