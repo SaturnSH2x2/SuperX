@@ -142,6 +142,7 @@ void RunSuperX() {
 
 		switch (engineState) {
 			case SUPERX_MAINGAME:
+				// TODO: allow sprite/layer draw order to be set by the user
 				DrawLayer(0);
 				UpdateObjects(0);
 				break;

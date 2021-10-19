@@ -7,8 +7,8 @@ u16 layerCount;
 Tileset sceneTileset;
 TileLayer* sceneLayers;
 
-u16 cameraPosX;
-u16 cameraPosY;
+int cameraPosX;
+int cameraPosY;
 
 char sceneName[255];
 
@@ -33,6 +33,7 @@ int LoadScene(const char* sceneName) {
 	int actualWidth;
 	int pathLength;
 
+	// TODO: append scene path
 	root = json_load_file(sceneName, 0, &error);
 
 	if (!root) {
@@ -287,6 +288,8 @@ int LoadTileset(const char* name) {
 	return 0;
 }
 
+// TODO: check vertical scrolling
+// TODO: take parallax scrolling speeds into account
 void DrawLayer(int layer) {
 	int startingPosX = cameraPosX;
 	int startingPosY = cameraPosY;

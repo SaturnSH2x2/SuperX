@@ -62,9 +62,11 @@ extern "C" {
 
 /*
 	TODO: just a general laundry list of stuff to implement
-		1. Scene loading from .tmx files (should be top priority)
-		2. Add keyboard input support (some people don't have controllers)
-		3. Add sprite animation support. Somehow. Maybe implement a way to
+		*  Allow user to determine sprite/layer order.
+		*  Load tilemask collision data from JSON (generating said data should be done outside the engine)
+		*  Add keyboard input support (some people don't have controllers)
+		*  Rework palette loading from GIFs
+		*  Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
 
 	Actually implementing 2D Sonic physics comes later (and shouldn't be hard-coded

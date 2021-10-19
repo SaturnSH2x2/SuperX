@@ -32,8 +32,8 @@ extern u16 layerCount;
 extern Tileset sceneTileset;
 extern TileLayer* sceneLayers;
 
-extern u16 cameraPosX;
-extern u16 cameraPosY;
+extern int cameraPosX;
+extern int cameraPosY;
 
 extern char sceneName[255];
 
@@ -55,6 +55,11 @@ inline int GetCameraPosY() {
 inline void OffsetCamera(int x, int y) {
 	cameraPosX += x;
 	cameraPosY += y;
+
+	if (cameraPosX < 0)
+		cameraPosX = 0;
+	if (cameraPosY < 0)
+		cameraPosY = 0;
 }
 
 #endif
