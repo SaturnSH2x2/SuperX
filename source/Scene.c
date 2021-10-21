@@ -34,8 +34,15 @@ int LoadScene(const char* sceneName) {
 	int actualWidth;
 	int pathLength;
 
+	File f;
+
+	if (LoadFile(&f, sceneName, "r") || BufferFile(&f)) {
+		PrintLog("ERROR: could not open scene %s\n", sceneName);
+		return 1;
+	}
+
 	// TODO: derive scene path from filename
-	root = json_load_file(sceneName, 0, &error);
+	root = json_loadb((const char*) f.buffer, f.size, 0, &error);
 
 	if (!root) {
 		PrintLog("ERROR: parsing %s, line %d: %s\n", sceneName, error.line, error.text);
@@ -119,8 +126,13 @@ int LoadScene(const char* sceneName) {
 		objects = json_object_get(layerJs, "objects");
 		if (json_is_array(objects)) {
 			sceneLayers[i].tileData = NULL;
+
 			sceneLayers[i].objects = (lua_State**) malloc(MAX_OBJECTS * sizeof(lua_State*));
 			memset(sceneLayers[i].objects, 0, MAX_OBJECTS * sizeof(lua_State*));
+
+			sceneLayers[i].activeObjects = (lua_State**) malloc(MAX_OBJECTS * sizeof(lua_State*));
+			memset(sceneLayers[i].activeObjects, 0, MAX_OBJECTS * sizeof(lua_State*));
+
 			PrintLog("NOTE: skipping object layer\n");
 			json_decref(objects);
 			continue;
@@ -214,6 +226,8 @@ int LoadScene(const char* sceneName) {
 
 	json_decref(layerArray);
 	json_decref(root);
+
+	CloseFile(&f);
 
 	if (LoadTileset(sceneTileset.tsName)) {
 		PrintLog("ERROR: could not load tileset\n");

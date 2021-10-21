@@ -364,7 +364,7 @@ void SetupBasicObjectAttributes(lua_State* L, float x, float y, int activeOffscr
 }
 
 // --- end Lua library definitions ---
-int InitObject(const char* scriptName, int sLayer, float x, float y) {
+int InitObject(const char* scriptName, int sLayer, float x, float y, int activeOffscreen) {
 	int i = -1;
 	for (int x = 0; x < MAX_OBJECTS; x++) {
 		if (objs[x] == NULL) {
@@ -388,7 +388,7 @@ int InitObject(const char* scriptName, int sLayer, float x, float y) {
 	}
 
 	SetupAPI(objs[i]);
-	SetupBasicObjectAttributes(objs[i], x, y);
+	SetupBasicObjectAttributes(objs[i], x, y, activeOffscreen);
 
 	if (lua_pcall(objs[i], 0, 0, 0)) {
 		engineState = SUPERX_SCRIPTERROR;

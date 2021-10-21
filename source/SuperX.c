@@ -118,7 +118,7 @@ int InitSuperX() {
 	LoadScene("./green-hill-map.json");
 
 	// TODO: load a full scene instead of just an object
-	InitObject("debug.lua", 1, 0.0, 0.0);
+	InitObject("debug.lua", 1, 0.0, 0.0, 0);
 
 	return 0;
 }

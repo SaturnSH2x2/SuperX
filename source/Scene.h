@@ -13,6 +13,7 @@ typedef struct {
 	// all relevant object data is stored on the Lua stack
 	// these just point to objs in Script.c
 	lua_State** objects;
+	lua_State** activeObjects;
 
 	// TODO: have this read in
 	// parallax speed spanning entire layer
