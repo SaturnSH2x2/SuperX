@@ -15,6 +15,8 @@ typedef struct {
 	lua_State** objects;
 	lua_State** activeObjects;
 
+	int activeObjectCount;
+
 	// TODO: have this read in
 	// parallax speed spanning entire layer
 	float parallaxFactorX;

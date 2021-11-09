@@ -9,6 +9,24 @@ char down[MAX_GAMEPADS][12];
 char held[MAX_GAMEPADS][12];
 char   up[MAX_GAMEPADS][12];
 
+// keyboard input always associated with port 1
+KeyMap keyboardMappings[12];
+
+const SDL_Keycode defaultMap[12] = {
+	SDL_SCANCODE_UP,
+	SDL_SCANCODE_DOWN,
+	SDL_SCANCODE_LEFT,
+	SDL_SCANCODE_RIGHT,
+	SDL_SCANCODE_Z,
+	SDL_SCANCODE_X,
+	SDL_SCANCODE_A,
+	SDL_SCANCODE_S,
+	SDL_SCANCODE_Q,
+	SDL_SCANCODE_W,
+	SDL_SCANCODE_RETURN,
+	SDL_SCANCODE_RSHIFT
+};
+
 int InitControllerInputGC() {
 	// TODO: add option for this in config file
 	swapConfirmationButton = false;
@@ -28,6 +46,58 @@ int InitControllerInputGC() {
 
 	controllersConnected = 0;	
 	SDL_GameControllerEventState(SDL_ENABLE);
+
+	return 0;
+}
+
+int LoadKeyboardMapping(json_t* root, char* altered) {
+	char createObject = 0;
+	memset(keyboardMappings, 0, 12 * sizeof(KeyMap));
+
+	json_t* input = json_object_get(root, "input");
+	if (!json_is_object(input)) {
+		createObject = 1;
+		*altered = 1;
+		input = json_object();
+	}
+
+	json_t* mapping = json_object_get(input, "keyboard-mapping");
+	if (!mapping) {
+		json_decref(mapping);
+		mapping = json_object();
+
+		// populate with default keyboard mappings
+		for (int i = 0; i < 12; i++) {
+			json_object_set(mapping, keyNames[i], json_integer(defaultMap[i])); 
+		}
+
+		json_object_set(input, "keyboard-mapping", mapping);
+	} else if (!json_is_object(mapping)) {
+		PrintLog("ERROR: expected object for \"keyboard-mapping\"\n");
+		json_decref(mapping);
+		return 1;
+	}
+
+	const char* key;
+	json_t* val;
+	int bIndex = 0;
+	json_object_foreach(mapping, key, val) {
+		for (int i = 0; i < 12; i++) {
+			// ignore non-number values
+			if (!json_is_number(val))
+				continue;
+
+			if (strcmp(key, keyNames[i]) == 0) {
+				keyboardMappings[bIndex].key = json_integer_value(val);
+				keyboardMappings[bIndex].button = i;
+				bIndex++;
+			}
+		}
+	}
+
+	if (createObject) {
+		json_object_set(root, "input", input);
+	}
 
 	return 0;
 }
@@ -90,8 +160,12 @@ void SDLInputGC() {
 						displayPaletteOverlay = !displayPaletteOverlay;
 						break;
 					default:
+						UpdateKeyboard(ev.key.keysym.scancode, 1);
 						break;
 				}
+				break;
+			case SDL_KEYUP:
+				UpdateKeyboard(ev.key.keysym.scancode, 0);
 				break;
 			case SDL_QUIT:
 				engineState = SUPERX_EXIT;
@@ -102,10 +176,23 @@ void SDLInputGC() {
 	}
 }
 
+void UpdateKeyboard(SDL_Keycode k, int kDown) {
+	for (int i = 0; i < 12; i++) {
+		if (k == keyboardMappings[i].key) {
+			if (kDown) {
+				down[0][keyboardMappings[i].button] = 1;
+				held[0][keyboardMappings[i].button] = 1;
+			} else {
+			 	  up[0][keyboardMappings[i].button] = 1;
+				held[0][keyboardMappings[i].button] = 0;
+			}
+		}
+	}
+}
+
 void UpdateControllerGC(int which, int button, int state) {
 	int w;
 	int b;
-#if SUPERX_USING_SDL2
 	w = -1;
 	for (int i = 0; i < MAX_GAMEPADS; i++) {
 		if (gamePadWhich[i] == which) {
@@ -155,7 +242,6 @@ void UpdateControllerGC(int which, int button, int state) {
 			b = -1;
 			break;
 	}
-#endif
 
 	if (b == -1 || w == -1)
 		return;

@@ -10,10 +10,28 @@ int (*GetButtonDown)(int, int);
 int (*GetButtonHeld)(int, int);
 int (*GetButtonUp)(int, int);
 
-int SetInputBackend(SuperXInputType iType) {
+int (*LoadKeyMapping)(json_t*, char*);
+
+const char* keyNames[12] = {
+	"up",
+	"down",
+	"left",
+	"right",
+	"A",
+	"B",
+	"X",
+	"Y",
+	"L",
+	"R",
+	"start",
+	"select"
+};
+
+void SetInputBackend(SuperXInputType iType) {
 	switch (iType) {
 		case SUPERX_GAMECONTROLLER_INPUT:
 			InitControllerInput = InitControllerInputGC;
+			LoadKeyMapping      = LoadKeyboardMapping;
 			UpdateController    = SDLInputGC;
 			GetButtonDown       = GetButtonDownGC;
 			GetButtonHeld       = GetButtonHeldGC;
@@ -23,6 +41,7 @@ int SetInputBackend(SuperXInputType iType) {
 			break;
 		default:
 			InitControllerInput = InitDummyInput;
+			LoadKeyMapping      = DummyKeyMap;
 			UpdateController    = UpdateDummyInput;
 			GetButtonDown       = GetButtonDummy;
 			GetButtonHeld       = GetButtonDummy;
@@ -30,6 +49,4 @@ int SetInputBackend(SuperXInputType iType) {
 			inputType = SUPERX_DUMMY_INPUT;
 			break;
 	}
-
-	return InitControllerInput();
 }

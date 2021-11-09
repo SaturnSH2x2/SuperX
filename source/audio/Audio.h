@@ -39,6 +39,6 @@ extern void (*CloseMusic)();
 
 // --- --- END FUNCTION POINTERS --- ---
 
-int SetAudioBackend(SuperXAudioType aType);
+void SetAudioBackend(SuperXAudioType aType);
 
 #endif

@@ -16,6 +16,9 @@ int LoadUserConfig() {
 
 	json_t* display;
 
+	char altered = 0;
+
+	// this file wouldn't be with the rest of the game data, so this is fine
 	root = json_load_file("config.json", 0, &error);
 	if (!root) {
 		if (error.line == -1) {
@@ -32,6 +35,9 @@ int LoadUserConfig() {
 		return 1;
 	}
 
+	// load any input remapping
+	LoadKeyMapping(root, &altered);
+
 	// load display settings
 	display = json_object_get(root, "display");
 	if (!json_is_object(display)) {
@@ -43,22 +49,26 @@ int LoadUserConfig() {
 		json_object_set(display, "window-height",           json_integer(DEFAULT_SCREENSIZEY));
 		json_object_set(display, "fullscreen", json_false());
 		json_object_set(root, "display", display);
-
-		json_dump_file(root, "config.json", 0);
 	}
 
+	
 	AssignValueInt(display, "internal-screen-width", &bufferSizeX);
 	AssignValueInt(display, "internal-screen-height", &bufferSizeY);
 	AssignValueInt(display, "window-width",  &windowSizeX);
 	AssignValueInt(display, "window-height", &windowSizeY);
 	AssignValueBool(display, "fullscreen", &isFullscreen);
 
+	if (altered) {
+		PrintLog("NOTE: writing to config.json\n");
+		json_dump_file(root, "config.json", 0);
+	}
+
+	json_decref(display);
 	json_decref(root);
 	
 	return 0;
 }
 
-// TODO: currently only uses Data folder mode
 int LoadGameConfig() {
 	json_t* root;
 	json_error_t error;
@@ -69,9 +79,15 @@ int LoadGameConfig() {
 	const char* key;
 	json_t* val;
 
-	if (useDataFolder) {
-		root = json_load_file("./Data/GameConfig.json", 0, &error);
+	File f;
+
+	if (LoadFile(&f, "Data/GameConfig.json", "r") || BufferFile(&f)) {
+		PrintLog("ERROR: failed to load GameConfig.json\n");
+		CloseFile(&f);
+		return 1;
 	}
+
+	root = json_loadb((const char*) f.buffer, f.size, 0, &error);
 
 	if (!root) {
 		PrintLog("ERROR: parsing GameConfig.json, line %d: %s\n", error.line, error.text);
@@ -126,6 +142,9 @@ int LoadGameConfig() {
 
 	json_decref(sTreeJS);
 	json_decref(root);
+
+	CloseFile(&f);
+
 	return 0;
 }
 

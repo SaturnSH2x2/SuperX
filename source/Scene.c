@@ -38,6 +38,7 @@ int LoadScene(const char* sceneName) {
 
 	if (LoadFile(&f, sceneName, "r") || BufferFile(&f)) {
 		PrintLog("ERROR: could not open scene %s\n", sceneName);
+		CloseFile(&f);
 		return 1;
 	}
 
@@ -324,7 +325,6 @@ int LoadTileset(const char* name) {
 	return 0;
 }
 
-// TODO: check vertical scrolling
 // TODO: take parallax scrolling speeds into account
 void DrawLayer(int layer) {
 	int startingPosX = cameraPosX;

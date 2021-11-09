@@ -57,7 +57,7 @@ extern int screenHeight;
 // --- --- END VARIABLE POINTERS --- ---
 
 // sets and initializes the appropriate render backend
-int SetRenderBackend(SuperXRenderType rType);
+void SetRenderBackend(SuperXRenderType rType);
 
 // draw calls that basically just rely on other draw calls
 void DrawText(int x, int y, u32 color, int width, const char* text, ...);

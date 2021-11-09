@@ -27,7 +27,7 @@ int screenWidth;
 int screenHeight;
 // --- --- END RENDER VARIABLES --- ---
 
-int SetRenderBackend(SuperXRenderType rType) {
+void SetRenderBackend(SuperXRenderType rType) {
 	switch (renderType) {
 		case SUPERX_SW_RENDER:
 			RenderBackendInit   = InitSWBackend;
@@ -60,8 +60,6 @@ int SetRenderBackend(SuperXRenderType rType) {
 			renderType = SUPERX_DUMMY_RENDER;
 			break;
 	};
-
-	return RenderBackendInit();
 }
 
 void DrawText(int x, int y, u32 color, int width, const char* text, ...) {

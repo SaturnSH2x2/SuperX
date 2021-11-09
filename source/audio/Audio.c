@@ -18,7 +18,7 @@ void (*CloseMusic)();
 SuperXAudioType audioType;
 u8 audioEnabled;
 
-int SetAudioBackend(SuperXAudioType aType) {
+void SetAudioBackend(SuperXAudioType aType) {
 	switch (aType) {
 		case SUPERX_MIXER_AUDIO:
 			InitAudio  = InitAudioMixer;
@@ -51,11 +51,4 @@ int SetAudioBackend(SuperXAudioType aType) {
 			audioType = SUPERX_DUMMY_AUDIO;
 			break;
 	};
-
-	if (InitAudio()) {
-		audioEnabled = 0;
-		return 1;
-	}
-
-	return 0;
 }

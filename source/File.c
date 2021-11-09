@@ -3,6 +3,8 @@
 int usingDataFolder = 1;
 
 int LoadFile(File* f, const char* path, const char* mode) {
+	PrintLog("FILE: loading %s\n", path);
+
 	if (usingDataFolder) {
 		f->handle = fOpen(path, mode);
 		if (!f->handle) {

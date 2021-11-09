@@ -16,8 +16,16 @@ int LoadSpriteSheetFromPNG(const char* fileName, u8* sheetIndex) {
 	unsigned char* pixelData = NULL;
 	unsigned int width, height;
 
+	File f;
+
+	if (LoadFile(&f, fileName, "r") || BufferFile(&f)) {
+		PrintLog("ERROR: Failed to load sprite %s\n", fileName);
+		CloseFile(&f);
+		return 1;
+	}
+
 	// load raw pixel data into memory
-	error = lodepng_decode32_file(&pixelData, &width, &height, fileName);
+	error = lodepng_decode_memory(&pixelData, &width, &height, (const unsigned char*) f.buffer, f.size, LCT_RGBA, 8);
 	if (error) {
 		PrintLog("ERROR: loading %s, %s\n", fileName, lodepng_error_text(error));
 		return 1;

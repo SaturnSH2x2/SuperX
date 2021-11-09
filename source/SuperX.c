@@ -25,7 +25,7 @@ int SetupSDL(u32 windowFlags) {
 			return 1;
 		}
 
-		PrintLog("Creating window of resolution %dx%d\n", windowSizeX, windowSizeY);
+		PrintLog("NOTE: Creating window of resolution %dx%d\n", windowSizeX, windowSizeY);
 	}
 
 	return 0;
@@ -70,6 +70,11 @@ int InitSuperX() {
 	// TODO: currently hard-coded, do something about this
 	useDataFolder = 1;
 
+	// TODO: these functions should return void if they're only setting variables
+	SetRenderBackend(SUPERX_SW_RENDER);
+	SetInputBackend(SUPERX_GAMECONTROLLER_INPUT);
+	SetAudioBackend(SUPERX_MIXER_AUDIO);
+
 	if (LoadGameConfig()) {
 		PrintLog("ERROR: while loading GameConfig.json\n");
 		return 1;
@@ -87,6 +92,22 @@ int InitSuperX() {
 	}
 #endif
 
+	if (InitControllerInput()) {
+		PrintLog("ERROR: could not initialize input backend\n");
+		return 1;
+	}
+
+	if (RenderBackendInit()) {
+		PrintLog("ERROR: could not initialize render backend\n");
+		return 1;
+	}
+
+	if (InitAudio()) {
+		PrintLog("ERROR: could not initialize audio backend; audio disabled\n");
+		audioEnabled = 0;
+	}
+
+
 #if SUPERX_USING_SDL2
 	if (isFullscreen) {
 		SDL_SetWindowFullscreen(gameWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -94,20 +115,6 @@ int InitSuperX() {
 #endif
 
 	engineState = SUPERX_MAINGAME;
-
-	if (SetRenderBackend(SUPERX_SW_RENDER)) {
-		PrintLog("ERROR: could not initialize render backend\n");
-		return 1;
-	}
-
-	if (SetInputBackend(SUPERX_GAMECONTROLLER_INPUT)) {
-		PrintLog("ERROR: could not initialize input backend\n");
-		return 1;
-	}
-
-	if (SetAudioBackend(SUPERX_MIXER_AUDIO)) {
-		PrintLog("ERROR: could not initialize audio backend, audio is disabled\n");
-	}
 
 
 	if (InitPalettes()) {
@@ -134,6 +141,8 @@ void CloseSuperX() {
 }
 
 void RunSuperX() {
+	u16 i;
+
 	while (engineState != SUPERX_EXIT) {
 		FrameLimitStart();
 
@@ -142,9 +151,16 @@ void RunSuperX() {
 
 		switch (engineState) {
 			case SUPERX_MAINGAME:
-				// TODO: allow sprite/layer draw order to be set by the user
-				DrawLayer(0);
-				UpdateObjects(1);
+				for (i = 0; i < layerCount; i++) {
+					// tile layer
+					if (sceneLayers[i].tileData)
+						DrawLayer(i);
+
+					// object layer
+					if (sceneLayers[i].objects)
+						UpdateObjects(i);
+				}
+
 				break;
 			case SUPERX_DEVMENU:
 				RunDevMenu();

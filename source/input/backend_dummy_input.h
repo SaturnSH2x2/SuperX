@@ -3,6 +3,7 @@
 
 int InitDummyInput();
 void UpdateDummyInput();
+int DummyKeyMap(json_t* js, char* c);
 int GetButtonDummy(int port, int button);
 
 #endif

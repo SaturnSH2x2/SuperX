@@ -378,10 +378,16 @@ int InitObject(const char* scriptName, int sLayer, float x, float y, int activeO
 		return 1;
 	}
 
+	File f;
+	if (LoadFile(&f, scriptName, "r") || BufferFile(&f)) {
+		PrintLog("ERROR: could not load object %s\n", scriptName);
+		return 1;
+	}
+
 	objs[i] = luaL_newstate();
 	luaL_openlibs(objs[i]);
 	
-	if (luaL_loadfile(objs[i], scriptName)) {
+	if (luaL_loadbuffer(objs[i], (const char*) f.buffer, f.size, scriptName)) {
 		engineState = SUPERX_SCRIPTERROR;
 		DisplayScriptError(objs[i]);
 		return 1;
@@ -418,6 +424,8 @@ int InitObject(const char* scriptName, int sLayer, float x, float y, int activeO
 			break;
 		}
 	}
+
+	CloseFile(&f);
 
 	return 0;
 }

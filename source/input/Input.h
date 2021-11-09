@@ -25,6 +25,7 @@ typedef enum {
 
 extern SuperXInputType inputType;
 extern bool swapConfirmationButton;
+extern const char* keyNames[12];
 
 extern int (*InitControllerInput)();
 extern void (*UpdateController)();
@@ -32,6 +33,8 @@ extern int (*GetButtonDown)(int, int);
 extern int (*GetButtonHeld)(int, int);
 extern int (*GetButtonUp)(int, int);
 
-int SetInputBackend(SuperXInputType iType);
+extern int (*LoadKeyMapping)(json_t*, char*);
+
+void SetInputBackend(SuperXInputType iType);
 
 #endif
