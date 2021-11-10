@@ -128,14 +128,20 @@ void SDLInputGC() {
 					case SDLK_UP:
 						if (engineState == SUPERX_DEVMENU)
 							DevMenuInput(DEVINPUT_UP);
+
+						goto read_in;
 						break;
 					case SDLK_DOWN:
 						if (engineState == SUPERX_DEVMENU)
 							DevMenuInput(DEVINPUT_DOWN);
+
+						goto read_in;
 						break;
 					case SDLK_RETURN:
 						if (engineState == SUPERX_DEVMENU)
 							DevMenuInput(DEVINPUT_SELECT);
+
+						goto read_in;
 						break;
 					case SDLK_ESCAPE:
 						if (engineState == SUPERX_DEVMENU ||
@@ -160,6 +166,7 @@ void SDLInputGC() {
 						displayPaletteOverlay = !displayPaletteOverlay;
 						break;
 					default:
+						read_in:
 						UpdateKeyboard(ev.key.keysym.scancode, 1);
 						break;
 				}
