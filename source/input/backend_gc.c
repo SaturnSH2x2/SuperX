@@ -186,13 +186,13 @@ void SDLInputGC() {
 void UpdateKeyboard(SDL_Keycode k, int kDown) {
 	for (int i = 0; i < 12; i++) {
 		if (k == keyboardMappings[i].key) {
-			if (kDown) {
+			if (kDown && !held[0][keyboardMappings[i].button]) {
 				down[0][keyboardMappings[i].button] = 1;
-				held[0][keyboardMappings[i].button] = 1;
 			} else {
 			 	  up[0][keyboardMappings[i].button] = 1;
-				held[0][keyboardMappings[i].button] = 0;
 			}
+
+			held[0][keyboardMappings[i].button] = kDown;
 		}
 	}
 }

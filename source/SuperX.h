@@ -68,7 +68,6 @@ extern "C" {
 	TODO: just a general laundry list of stuff to implement
 		*  Properly load in objects from object layers.
 		*  Load tilemask collision data from JSON (generating said data should be done outside the engine)
-		*  Add keyboard input support (some people don't have controllers)
 		*  Rework palette loading from GIFs
 		*  Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
