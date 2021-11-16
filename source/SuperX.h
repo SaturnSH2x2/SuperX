@@ -66,9 +66,10 @@ extern "C" {
 
 /*
 	TODO: just a general laundry list of stuff to implement
-		*  Properly load in objects from object layers.
-		*  Load tilemask collision data from JSON (generating said data should be done outside the engine)
-		*  Rework palette loading from GIFs
+		*  Rework tile loading to load from a custom binary format (you can implement this in Tiled)
+		*  Rework game object behavior to add C++ object support (should be handled similarly to RSDKv5)
+		*  Add tilemask collision binary support
+		*  Rework palette loading from GIFs (as well as rework GIF file loading to go through SDL_RWops)
 		*  Add sprite animation support. Somehow. Maybe implement a way to
 			play GIF animations directly?
 

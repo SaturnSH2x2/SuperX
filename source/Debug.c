@@ -141,6 +141,7 @@ void DevMenuInput(DevInput stat) {
 			if (select) {
 				// TODO: scene loading isn't yet implemented; implement this once you have
 				// that up and running
+				LoadScene(selectedCategory->scenes[devMenuSelect].scenePath);
 			}
 
 			break;

@@ -14,6 +14,7 @@ char sceneName[255];
 
 int LoadScene(const char* sceneName) {
 	// free the current scene before loading in the new one
+	// TODO: make sure EVERYTHING, and I do mean EVERYTHING, is cleared
 	FreeScene();
 
 	json_t* root;
@@ -228,9 +229,10 @@ int LoadScene(const char* sceneName) {
 	json_decref(layerArray);
 	json_decref(root);
 
-	CloseFile(&f);
+	char tsPath[255];
+	sprintf(tsPath, "%s/%s", f.directory, sceneTileset.tsName);
 
-	if (LoadTileset(sceneTileset.tsName)) {
+	if (LoadTileset(tsPath)) {
 		PrintLog("ERROR: could not load tileset\n");
 		return 1;
 	}
@@ -239,6 +241,8 @@ int LoadScene(const char* sceneName) {
 }
 
 void FreeScene() {
+	ClearAllSpriteSheets();
+
 	if (!sceneLayers)
 		return;
 
@@ -256,14 +260,20 @@ int LoadTileset(const char* name) {
 	json_error_t error;
 
 	char imgPath[0x100];
+	char fName[0x100];
 	int pathLength;
 
+	File f;
+
 	memset(imgPath, 0, 0x100 * sizeof(char));
-	tsRoot = json_load_file(name, 0, &error);
-	if (!tsRoot) {
-		PrintLog("ERROR: parsing %s, line %d %s\n", name, error.line, error.text);
+
+	if (LoadFile(&f, name, "r") || BufferFile(&f)) {
+		PrintLog("ERROR: could not open scene %s\n", sceneName);
+		CloseFile(&f);
 		return 1;
 	}
+
+	tsRoot = json_loadb((const char*)f.buffer, f.size, 0, &error); 
 
 	if (!json_is_object(tsRoot)) {
 		PrintLog("ERROR: parsing %s: tileset root is not an object\n", name);
@@ -292,11 +302,12 @@ int LoadTileset(const char* name) {
 		return 1;
 	}
 
-	strncpy(imgPath, json_string_value(property), (pathLength >= 0x100) ? 0x99 : pathLength);
+	sprintf(imgPath, "%s/%s", f.directory, json_string_value(property));
+	sprintf(fName, "%s", json_string_value(property));
 	if ( 	
-			(imgPath[pathLength - 3] == 'g' || imgPath[pathLength - 3] == 'G') && 
-	     		(imgPath[pathLength - 2] == 'i' || imgPath[pathLength - 2] == 'I') &&
-			(imgPath[pathLength - 1] == 'f' || imgPath[pathLength - 1] == 'F')
+			(fName[pathLength - 3] == 'g' || fName[pathLength - 3] == 'G') && 
+	     		(fName[pathLength - 2] == 'i' || fName[pathLength - 2] == 'I') &&
+			(fName[pathLength - 1] == 'f' || fName[pathLength - 1] == 'F')
 	   ) {
 		if (LoadSpriteSheetFromGIF(imgPath, &sceneTileset.spriteIndex, 0, 0)) {
 			PrintLog("ERROR: could not load tileset graphic\n");
@@ -305,9 +316,9 @@ int LoadTileset(const char* name) {
 			return 1;
 		}
 	} else if (
-			(imgPath[pathLength - 3] == 'p' || imgPath[pathLength - 2] == 'P') &&
-			(imgPath[pathLength - 2] == 'n' || imgPath[pathLength - 2] == 'N') &&
-			(imgPath[pathLength - 1] == 'g' || imgPath[pathLength - 1] == 'G')
+			(fName[pathLength - 3] == 'p' || fName[pathLength - 2] == 'P') &&
+			(fName[pathLength - 2] == 'n' || fName[pathLength - 2] == 'N') &&
+			(fName[pathLength - 1] == 'g' || fName[pathLength - 1] == 'G')
 		  ) {
 		if (LoadSpriteSheetFromPNG(imgPath, &sceneTileset.spriteIndex)) {
 			PrintLog("ERROR: could not load tileset graphic\n");

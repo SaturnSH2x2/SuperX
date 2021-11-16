@@ -5,6 +5,7 @@ char useDataFolder;
 // game config variables
 char gameName[256];
 char gameVersion[16];
+char initialScene[255];
 
 SceneCategory* sceneTree;
 int categoryCount;
@@ -75,13 +76,15 @@ int LoadGameConfig() {
 
 	json_t* sTreeJS;
 
+	memset(initialScene, 0, 255 * sizeof(char));
+
 	// used for iteration
 	const char* key;
 	json_t* val;
 
 	File f;
 
-	if (LoadFile(&f, "Data/GameConfig.json", "r") || BufferFile(&f)) {
+	if (LoadFile(&f, "GameConfig.json", "r") || BufferFile(&f)) {
 		PrintLog("ERROR: failed to load GameConfig.json\n");
 		CloseFile(&f);
 		return 1;
@@ -96,6 +99,7 @@ int LoadGameConfig() {
 
 	AssignValueStr(root, "game-name", gameName, 255);
 	AssignValueStr(root, "game-version", gameVersion, 15);
+	AssignValueStr(root, "initial-scene", initialScene, 255);
 
 	sTreeJS = json_object_get(root, "scene-tree");
 	if (!json_is_object(sTreeJS)) {

@@ -22,6 +22,7 @@ extern char useDataFolder;
 
 extern char gameName[256];
 extern char gameVersion[16];
+extern char initialScene[255];
 extern SceneCategory* sceneTree;
 extern int categoryCount;
 
