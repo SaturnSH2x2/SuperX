@@ -87,7 +87,7 @@ int LoadScene(const char* sceneName) {
 
 	// copy path into memory, then load later
 	pathLength = json_string_length(tileset1Source);
-	strncpy(sceneTileset.tsName, json_string_value(tileset1Source), 
+	strncpy(sceneTileset.tsName, json_string_value(tileset1Source),
 			(pathLength > 0x100) ? 0x100 : pathLength);
 	json_decref(tileset1Source);
 	json_decref(tileset1);
@@ -174,7 +174,7 @@ int LoadScene(const char* sceneName) {
 		}
 
 		// allocate memory for tile layer
-		sceneLayers[i].tileData = (int*) malloc(sceneLayers[i].width * sceneLayers[i].height * 
+		sceneLayers[i].tileData = (int*) malloc(sceneLayers[i].width * sceneLayers[i].height *
 				sizeof(int));
 		memset(sceneLayers[i].tileData, 0, sceneLayers[i].width * sceneLayers[i].height *
 				sizeof(int));
@@ -208,7 +208,7 @@ int LoadScene(const char* sceneName) {
 					continue;
 				}
 
-				sceneLayers[i].tileData[y * sceneLayers[i].width + x] = 
+				sceneLayers[i].tileData[y * sceneLayers[i].width + x] =
 					(unsigned int) json_number_value(tileIndex);
 
 				json_decref(tileIndex);
@@ -226,9 +226,6 @@ int LoadScene(const char* sceneName) {
 
 	}
 
-	json_decref(layerArray);
-	json_decref(root);
-
 	char tsPath[255];
 	sprintf(tsPath, "%s/%s", f.directory, sceneTileset.tsName);
 
@@ -236,6 +233,11 @@ int LoadScene(const char* sceneName) {
 		PrintLog("ERROR: could not load tileset\n");
 		return 1;
 	}
+
+	json_decref(layerArray);
+	json_decref(root);
+
+
 
 	return 0;
 }
@@ -273,7 +275,8 @@ int LoadTileset(const char* name) {
 		return 1;
 	}
 
-	tsRoot = json_loadb((const char*)f.buffer, f.size, 0, &error); 
+  // engine crashes here
+	tsRoot = json_loadb((const char*)f.buffer, f.size, 0, &error);
 
 	if (!json_is_object(tsRoot)) {
 		PrintLog("ERROR: parsing %s: tileset root is not an object\n", name);
@@ -285,7 +288,7 @@ int LoadTileset(const char* name) {
 	AssignValueInt(tsRoot, "tilecount", &sceneTileset.maxTiles);
 
 	// look for file name and load it into memory
-	property = json_object_get(tsRoot, "image");	
+	property = json_object_get(tsRoot, "image");
 	if (!json_is_string(property)) {
 		PrintLog("ERROR: expected string for property \"image\"\n");
 		json_decref(property);
@@ -304,8 +307,8 @@ int LoadTileset(const char* name) {
 
 	sprintf(imgPath, "%s/%s", f.directory, json_string_value(property));
 	sprintf(fName, "%s", json_string_value(property));
-	if ( 	
-			(fName[pathLength - 3] == 'g' || fName[pathLength - 3] == 'G') && 
+	if (
+			(fName[pathLength - 3] == 'g' || fName[pathLength - 3] == 'G') &&
 	     		(fName[pathLength - 2] == 'i' || fName[pathLength - 2] == 'I') &&
 			(fName[pathLength - 1] == 'f' || fName[pathLength - 1] == 'F')
 	   ) {
@@ -358,9 +361,9 @@ void DrawLayer(int layer) {
 		//if (xCount < 0)
 		//	xCount = (startingPosX - 16 + sceneLayers[layer].width * 16) % (sceneLayers[layer].width * 16);
 		tile = &sceneLayers[layer].tileData[
-				((y / 16) % sceneLayers[layer].height) * sceneLayers[layer].width + 
+				((y / 16) % sceneLayers[layer].height) * sceneLayers[layer].width +
 				(startingPosX / 16)                    % sceneLayers[layer].width
-		];	
+		];
 
 		for (int x = startingPosX; x < startingPosX + screenWidth + 16; x+= 16) {
 			int drawX = x - startingPosX - xSpacing;
@@ -388,8 +391,8 @@ void DrawLayer(int layer) {
 			//PrintLog("x: %d, y: %d, sx: %d, sy: %d, tile id: %d\n",
 			//		x, y, sx, sy, *tile - 1);
 
-			DrawSprite(sceneTileset.spriteIndex, drawX, drawY, 
-					sx, sy, 16, 16, NOFLIP);	
+			DrawSprite(sceneTileset.spriteIndex, drawX, drawY,
+					sx, sy, 16, 16, NOFLIP);
 
 			tile++;
 		}

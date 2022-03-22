@@ -3,10 +3,11 @@
 int usingDataFolder = 1;
 
 int LoadFile(File* f, const char* path, const char* mode) {
-	PrintLog("FILE: loading %s\n", path);
+
 	char realPath[255];
 
 	if (usingDataFolder) {
+	  PrintLog("FILE: loading Data/%s\n", path);
 		snprintf(realPath, 255, "Data/%s", path);
 		f->handle = fOpen(realPath, mode);
 		if (!f->handle) {

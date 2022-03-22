@@ -66,7 +66,6 @@ extern "C" {
 
 /*
 	TODO: just a general laundry list of stuff to implement
-		*  Rework tile loading to load from a custom binary format (you can implement this in Tiled)
 		*  Rework game object behavior to add C++ object support (should be handled similarly to RSDKv5)
 		*  Add tilemask collision binary support
 		*  Rework palette loading from GIFs (as well as rework GIF file loading to go through SDL_RWops)

@@ -17,7 +17,7 @@ int SetupSDL(u32 windowFlags) {
 		return 1;
 	}
 
-	if (renderType == SUPERX_SW_RENDER) { 
+	if (renderType == SUPERX_SW_RENDER) {
 		SDL_CreateWindowAndRenderer(windowSizeX, windowSizeY, windowFlags, &gameWindow, &renderer);
 
 		if (!gameWindow || !renderer) {
